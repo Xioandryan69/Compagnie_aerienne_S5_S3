@@ -1,9 +1,7 @@
-
-
 -- =========================
 -- TABLE AEROPORT
 -- =========================
-CREATE TABLE aeroport (
+CREATE TABLE IF NOT EXISTS aeroport (
     code_iata VARCHAR(3) PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
     ville VARCHAR(100) NOT NULL,
@@ -13,7 +11,7 @@ CREATE TABLE aeroport (
 -- =========================
 -- TABLE AVION
 -- =========================
-CREATE TABLE avion (
+CREATE TABLE IF NOT EXISTS avion (
     id BIGSERIAL PRIMARY KEY,
     modele VARCHAR(100) NOT NULL,
     capacite INT NOT NULL,
@@ -23,7 +21,7 @@ CREATE TABLE avion (
 -- =========================
 -- TABLE VOL
 -- =========================
-CREATE TABLE vol (
+CREATE TABLE IF NOT EXISTS vol (
     id BIGSERIAL PRIMARY KEY,
     numero_vol VARCHAR(20) NOT NULL,
     date_vol DATE NOT NULL,
@@ -51,7 +49,7 @@ CREATE TABLE vol (
 -- =========================
 -- TABLE PASSAGER
 -- =========================
-CREATE TABLE passager (
+CREATE TABLE IF NOT EXISTS passager (
     id BIGSERIAL PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
     prenom VARCHAR(100) NOT NULL,
@@ -59,13 +57,14 @@ CREATE TABLE passager (
     numero_document VARCHAR(50) NOT NULL,
     nationalite VARCHAR(50),
     email VARCHAR(100),
-    telephone VARCHAR(30)
+    telephone VARCHAR(30),
+    sexe VARCHAR(10)
 );
 
 -- =========================
 -- TABLE RESERVATION
 -- =========================
-CREATE TABLE reservation (
+CREATE TABLE IF NOT EXISTS reservation (
     id BIGSERIAL PRIMARY KEY,
     date_reservation TIMESTAMP NOT NULL,
     statut VARCHAR(30) NOT NULL,
@@ -82,7 +81,7 @@ CREATE TABLE reservation (
         REFERENCES passager(id)
 );
 
-CREATE TABLE option_supplementaire (
+CREATE TABLE IF NOT EXISTS option_supplementaire (
     id BIGSERIAL PRIMARY KEY,
     type_option VARCHAR(50) NOT NULL,
     description VARCHAR(255),

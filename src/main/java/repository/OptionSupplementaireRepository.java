@@ -3,9 +3,9 @@ package repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import entity.Aeroport;
+import entity.OptionSupplementaire;
 
 @Repository
-public interface AeroportRepository extends JpaRepository<Aeroport, String> {
-    // méthodes custom si nécessaire
+public interface OptionSupplementaireRepository extends JpaRepository<OptionSupplementaire, Long> {
+
 }

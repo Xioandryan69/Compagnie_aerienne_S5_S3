@@ -151,3 +151,40 @@
         - First: 3 bagages en soute 32kg + 1 bagage cabine 14kg
 
 
+[]CRUD 
+X[]CRUD (Objectif)
+    - Fournir des endpoints CRUD (Create, Read, Update, Delete) pour les entités principales.
+    - Les opérations d'administration (create/update/delete) seront sous /admin/* et réservées aux rôles admin (auth non implémentée ici).
+
+Entités et accès souhaités (bref):
+    [X]- Vol
+        - create: admin
+        - read: tous
+        - update: admin
+        - delete: admin
+    [X]- Reservation
+        - create: public (via process de réservation)
+        - read: public pour consultation de sa réservation (id)
+        - update: admin (modif du statut)
+        - delete: admin
+    [X]- Aeroport
+        - create/update/delete: admin
+        - read: tous
+    [X]- Avion
+        - create/update/delete: admin
+        - read: tous
+    [X]- Passager
+        - create: public (au moment de réserver)
+        - read: admin / propriétaire (simplifié ici)
+        - update/delete: admin
+    [X]- OptionSupplementaire
+        - créé automatiquement ou admin
+        - read: tous (affichage)
+
+Checklist technique minimale pour CRUD
+    - Repositories: interfaces `JpaRepository` pour chaque entité (OK)
+    - Services: méthodes `listAll`, `findById`, `save`, `deleteById` (implémenter pour Vol & Reservation)
+    - Controllers: endpoints publics pour consultation, endpoints `/admin/*` pour gestion (forms + POST)
+    - Templates: pages forms ou fragments pour ajouter/modifier/supprimer (utiliser `gestion-vols.html` pour l'admin vols)
+
+Prochaine étape: implémenter CRUD pour `Vol` (backend) puis ajouter les vues/admin.

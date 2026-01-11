@@ -1,4 +1,14 @@
 package repository;
-public class VolRepository {
-    
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import entity.Vol;
+
+@Repository
+public interface VolRepository extends JpaRepository<Vol, Long> {
+
+    List<Vol> findByDepartIata(String departIata);
 }

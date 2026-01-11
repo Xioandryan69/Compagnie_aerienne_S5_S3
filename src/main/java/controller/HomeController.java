@@ -1,5 +1,8 @@
 package controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,64 +10,57 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import dto.RechercheDTO;
+import entity.Vol;
+import service.VolService;
 
 @Controller
 public class HomeController {
+
+    private final VolService volService;
+
+    public HomeController(VolService volService) {
+        this.volService = volService;
+    }
 
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("titre", "Bienvenue chez ITU Airlines");
         model.addAttribute("message", "Voyagez loin, payez juste.");
         model.addAttribute("recherche", new RechercheDTO());
-        
-        // Données statiques pour les aéroports
-        model.addAttribute("aeroports", getAeroportsStatiques());
-        
+
+        // Récupérer les aéroports depuis la base via le service
+        model.addAttribute("aeroports", volService.findAllAeroports());
+
         return "index";
     }
-    
+
     @PostMapping("/rechercher")
     public String rechercherVols(@ModelAttribute RechercheDTO recherche, Model model) {
         model.addAttribute("critere", recherche);
-        
-        // Simuler des résultats de recherche avec données statiques
-        model.addAttribute("vols", getVolsStatiques());
-        
+
+        // Recherche simple : si depart renseigné, filtrer par depart; sinon renvoyer tout
+        List<Vol> vols;
+        if (recherche.getDepart() != null && !recherche.getDepart().isBlank()) {
+            vols = volService.findByDepartIata(recherche.getDepart());
+        } else {
+            vols = volService.findAll();
+        }
+
+        // filtrage optionnel par arrivée ou date
+        if (recherche.getArrivee() != null && !recherche.getArrivee().isBlank()) {
+            vols = vols.stream()
+                    .filter(v -> recherche.getArrivee().equalsIgnoreCase(v.getArriveeIata()))
+                    .collect(Collectors.toList());
+        }
+        if (recherche.getDateDepart() != null) {
+            vols = vols.stream()
+                    .filter(v -> recherche.getDateDepart().equals(v.getDateVol()))
+                    .collect(Collectors.toList());
+        }
+
+        model.addAttribute("vols", vols);
+
         return "vols";
     }
-    
-    // Méthodes pour données statiques
-    private java.util.List<entity.Aeroport> getAeroportsStatiques() {
-        java.util.List<entity.Aeroport> aeroports = new java.util.ArrayList<>();
-        aeroports.add(new entity.Aeroport("TNR", "Ivato", "Antananarivo", "Madagascar"));
-        aeroports.add(new entity.Aeroport("CDG", "Charles de Gaulle", "Paris", "France"));
-        aeroports.add(new entity.Aeroport("JFK", "John F. Kennedy", "New York", "USA"));
-        aeroports.add(new entity.Aeroport("LHR", "Heathrow", "London", "UK"));
-        return aeroports;
-    }
-    
-    private java.util.List<entity.Vol> getVolsStatiques() {
-        java.util.List<entity.Vol> vols = new java.util.ArrayList<>();
-        
-        // Créer des vols de test
-        vols.add(new entity.Vol(1L, "MK101", 
-            java.time.LocalDate.of(2026, 1, 15),
-            java.time.LocalTime.of(8, 0),
-            java.time.LocalTime.of(16, 0),
-            450.00, "TNR", "CDG", 1L));
-        
-        vols.add(new entity.Vol(2L, "MK102",
-            java.time.LocalDate.of(2026, 1, 16),
-            java.time.LocalTime.of(10, 0),
-            java.time.LocalTime.of(18, 0),
-            470.00, "TNR", "CDG", 2L));
-        
-        vols.add(new entity.Vol(3L, "MK201",
-            java.time.LocalDate.of(2026, 1, 15),
-            java.time.LocalTime.of(12, 0),
-            java.time.LocalTime.of(16, 0),
-            300.00, "CDG", "JFK", 1L));
-            
-        return vols;
-    }
 }
+                  

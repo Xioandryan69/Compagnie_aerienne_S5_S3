@@ -4,50 +4,80 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import repository.AeroportRepository;
+import repository.AvionRepository;
+import repository.PassagerRepository;
+import repository.ReservationRepository;
+import service.VolService;
+
 @Controller
 public class AdminController {
-    
+
+    private final VolService volService;
+    private final AvionRepository avionRepository;
+    private final AeroportRepository aeroportRepository;
+    private final PassagerRepository passagerRepository;
+    private final ReservationRepository reservationRepository;
+
+    public AdminController(VolService volService,
+            AvionRepository avionRepository,
+            AeroportRepository aeroportRepository,
+            PassagerRepository passagerRepository,
+            ReservationRepository reservationRepository) {
+        this.volService = volService;
+        this.avionRepository = avionRepository;
+        this.aeroportRepository = aeroportRepository;
+        this.passagerRepository = passagerRepository;
+        this.reservationRepository = reservationRepository;
+    }
+
     @GetMapping("/admin")
     public String dashboard(Model model) {
+        model.addAttribute("nbVols", volService.findAll().size());
+        model.addAttribute("nbAvions", avionRepository.findAll().size());
+        model.addAttribute("nbAeroports", aeroportRepository.findAll().size());
+        model.addAttribute("nbPassagers", passagerRepository.findAll().size());
+        model.addAttribute("nbReservations", reservationRepository.findAll().size());
         return "admin";
     }
-    
+
     @GetMapping("/compte")
     public String compteClient(Model model) {
         return "compte-client";
     }
-    
+
     @GetMapping("/connexion")
     public String connexion(Model model) {
         return "connexion";
     }
-    
+
     @GetMapping("/admin/vols")
     public String gestionVols(Model model) {
+        model.addAttribute("vols", volService.findAll());
         return "gestion-vols";
     }
-    
+
     @GetMapping("/admin/avions")
     public String gestionAvions(Model model) {
+        model.addAttribute("avions", avionRepository.findAll());
         return "gestion-avions";
     }
-    
+
     @GetMapping("/admin/aeroports")
     public String gestionAeroports(Model model) {
+        model.addAttribute("aeroports", aeroportRepository.findAll());
         return "gestion-aeroports";
     }
-    
+
     @GetMapping("/admin/passagers")
     public String gestionPassagers(Model model) {
+        model.addAttribute("passagers", passagerRepository.findAll());
         return "gestion-passagers";
     }
 
     @GetMapping("/admin/paiements")
     public String gestionPaiements(Model model) {
-        model.addAttribute("paiements", getPaiementsStatiques());
-        model.addAttribute("facturesCount", 128);
-        model.addAttribute("paiementsValides", 124);
-        model.addAttribute("paiementsAnnules", 3);
+        model.addAttribute("reservations", reservationRepository.findAll());
         return "gestion-paiements";
     }
 
@@ -74,50 +104,28 @@ public class AdminController {
 
         return "parametre";
     }
-    
+
     @GetMapping("/deconnexion")
     public String deconnexion() {
         return "redirect:/";
     }
 
-    // Données statiques pour paiements
-    private java.util.List<java.util.Map<String,Object>> getPaiementsStatiques() {
-        java.util.List<java.util.Map<String,Object>> list = new java.util.ArrayList<>();
-        java.util.Map<String,Object> p1 = new java.util.HashMap<>();
-        p1.put("id", "2025-001");
-        p1.put("reservation", "R2025-010");
-        p1.put("montant", "350.00 EUR");
-        p1.put("statut", "VALIDÉ");
-        p1.put("date", "2025-01-03");
-        list.add(p1);
-
-        java.util.Map<String,Object> p2 = new java.util.HashMap<>();
-        p2.put("id", "2025-023");
-        p2.put("reservation", "R2025-045");
-        p2.put("montant", "120.00 EUR");
-        p2.put("statut", "ANNULÉ");
-        p2.put("date", "2025-01-10");
-        list.add(p2);
-
-        return list;
-    }
-
-    // Données statiques pour notifications
-    private java.util.List<java.util.Map<String,String>> getNotificationsStatiques() {
-        java.util.List<java.util.Map<String,String>> list = new java.util.ArrayList<>();
-        java.util.Map<String,String> n1 = new java.util.HashMap<>();
+    // Données statiques pour notifications (laisser en statique pour l'instant)
+    private java.util.List<java.util.Map<String, String>> getNotificationsStatiques() {
+        java.util.List<java.util.Map<String, String>> list = new java.util.ArrayList<>();
+        java.util.Map<String, String> n1 = new java.util.HashMap<>();
         n1.put("type", "Retard");
         n1.put("message", "Vol AF123 retardé de 45 minutes.");
         n1.put("date", "2025-01-05");
         list.add(n1);
 
-        java.util.Map<String,String> n2 = new java.util.HashMap<>();
+        java.util.Map<String, String> n2 = new java.util.HashMap<>();
         n2.put("type", "Annulation");
         n2.put("message", "Vol XY210 annulé pour raisons opérationnelles.");
         n2.put("date", "2025-01-07");
         list.add(n2);
 
-        java.util.Map<String,String> n3 = new java.util.HashMap<>();
+        java.util.Map<String, String> n3 = new java.util.HashMap<>();
         n3.put("type", "Changement porte");
         n3.put("message", "Vol AF123 : Porte A2 -> B4");
         n3.put("date", "2025-01-05");
