@@ -1,0 +1,142 @@
+1-
+[]page d accueil :
+    entree du site :
+        [] Barre de recherche vols
+
+        []Champs :
+            [] Aeroport de depart
+            []Aeroport d arrivee 
+            []Date depart 
+            [] Date de retour 
+            []Nombre de passagers
+            []Classe eco business 
+        []Bouton Rechercher 
+
+2-
+[]Page de recherche /liste vols 
+    vols dispo 
+        []liste des vols correspants recherche 
+        Pour chaque vol ;
+            []Numero de vol
+            []Aeroport de depart et arrivee
+            []Heure de depart et Ariive 
+            []Duree 
+            []Avion utilise
+            []Prix 
+            []places diponible 
+
+        []Filtres 
+            []Prix 
+            []Heure 
+            []Compagnie
+        []Bouton choisir Vol 
+3-
+[]PAge detail du vol 
+    afficheer les infos completes  d un vol 
+        []details vol 
+        []info avion 
+        []politique bagage 
+        []condition annulation modification 
+        []Bouton reserver 
+4-
+[]Information passager 
+    saisire les donnees du client 
+        []Nom ,prenom
+        []date de naissance
+        []sexe 
+        []Numero de piece d identite
+        []Nationnalite
+        []Coordonne(emaio,telephone ) 
+
+5
+[]Page choix du siege 
+    []Plan de l avion 
+    []Sieges dispo /occupe
+    []Choix du siege 
+    []Option hubblot couloir 
+6-??
+7-
+[]Page de paiement 
+    finaliser reservation 
+        []recapitulation vol 
+        []total a payer 
+        []moyen de paiement 
+            []carte bancaire
+            []mobilemoney
+        []Bouton payer 
+
+8-
+[]Page de confirmation
+    []Numero de reservation 
+    []Billet electronique 
+    []Detail du vol 
+    []Bouton teleharger le Billet
+    []Bouton envoyer par email 
+
+9-
+[]page compte clinet 
+    []mes informations 
+    []mes reservations 
+    []annuler /modifier une reservation 
+    []historique vol 
+
+10-
+[]page connexion/inscription 
+    []inscription
+    []connexion 
+    []modts de passe oublie 
+
+
+11-
+[]page cotes admin 
+    []statistiques
+        []nombres de vols 
+        []reservation du jour 
+        []autres dispi 
+    []graphiques 
+
+12-
+[]Gestion vols 
+    []ajouter vol
+    []modifier vol 
+    []supprimer un vol 
+    []programmer un vol sur plusieurs jours 
+    []associer pusieurs avions sur un vol 
+
+13-
+[]Gestion des avions
+    []liste des avions 
+    []capacite 
+    []Etat dispo maintenance 
+    []affectaion aux vols
+
+14.
+[]Gestion des Aeroport  
+    []code IATA
+    []Nom
+    []ville
+    []pays 
+
+
+15-Gestion des passagers 
+    []liste des passagers 
+    []reservations associes 
+    []hiostorique vols 
+
+
+16-Gestion paiements    
+    []paiements valides 
+    []paiement annuler
+    []factures 
+
+17-notifications 
+    []retard vol
+    []annulation
+    []changement de porte
+
+18-parametre 
+    []classes du voyage 
+    []prix de voyage
+    []politiques bagages 
+
+

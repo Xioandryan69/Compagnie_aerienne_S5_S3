@@ -1,0 +1,55 @@
+src
+    main
+        java
+            com
+                aerienne
+                    -AerienneApplication
+            controller
+                -HomeController.java
+                -VolController.java
+                -ReservationController.java
+                -AdminController.java
+
+            entity 
+                -Vol.java
+                -Aeroport.java
+                -Avion.java
+                -Reservation.java
+                -Passager.java
+                -OptionSupplementaire.java
+
+            repository 
+                -VolRepository.java
+                -AeroportRepository.java
+                -ReservationRepository.java
+
+
+            service Lpgique metier :
+                -VolService.java
+                -ReservationService.java
+                -PaiementService.java
+
+            dto :
+                -RechercheDTO.java
+                -ReservationDTO.java
+            
+            resources
+                templates 
+                    -index.Html
+                    .vols.Html
+                    -details-vol.Html
+                    -options.html
+                    -paiement.html
+                    -confirmation.html
+
+                static
+                    css 
+                        style.css
+                    js
+                        calcul-prix.js
+
+        CONFIG BD 
+            -schema.sql 
+            -data.sql     
+
+
