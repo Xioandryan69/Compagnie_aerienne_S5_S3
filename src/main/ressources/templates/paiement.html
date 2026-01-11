@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement - ITU Airlines</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        .card-paiement {
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .card-paiement:hover {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+        .card-paiement.selected {
+            border-color: #0d6efd;
+            background-color: #e7f1ff;
+            box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+        }
+        .carte-visuel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .mobile-money-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: white;
+        }
+        .orange { background: #ff6600; }
+        .mvola { background: #00a3ff; }
+        .airtel { background: #ed1c24; }
+        .progress-etapes {
+            height: 4px;
+            background: #dee2e6;
+            margin: 30px 0;
+            position: relative;
+        }
+        .etape-point {
+            position: absolute;
+            top: -8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #dee2e6;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+        }
+        .etape-point.active {
+            background: #0d6efd;
+        }
+        .etape-label {
+            position: absolute;
+            top: 25px;
+            font-size: 0.8em;
+            white-space: nowrap;
+        }
+        .secure-badge {
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        .carte-champ {
+            position: relative;
+        }
+        .carte-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+        }
+        .visa { color: #1a1f71; }
+        .mastercard { color: #eb001b; }
+        .cvv-info {
+            cursor: pointer;
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">ITU Airlines</a>
+            <div class="navbar-text text-white">
+                Étape 5/5 - Paiement sécurisé
+            </div>
+        </div>
+    </nav>
+
+    <!-- Barre de progression -->
+    <div class="container">
+        <div class="progress-etapes">
+            <div class="etape-point" style="left: 0%;">✓</div>
+            <div class="etape-point active" style="left: 25%;">✓</div>
+            <div class="etape-point active" style="left: 50%;">✓</div>
+            <div class="etape-point active" style="left: 75%;">✓</div>
+            <div class="etape-point active" style="left: 100%;">5</div>
+            
+            <div class="etape-label" style="left: 0%;">Recherche</div>
+            <div class="etape-label" style="left: 25%;">Informations</div>
+            <div class="etape-label" style="left: 50%;">Siège</div>
+            <div class="etape-label" style="left: 75%;">Options</div>
+            <div class="etape-label" style="left: 95%;">Paiement</div>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <div class="row">
+            <!-- Formulaire de paiement -->
+            <div class="col-lg-7">
+                <div class="text-center mb-5">
+                    <h2>Paiement sécurisé</h2>
+                    <p class="text-muted">Vos informations de paiement sont cryptées et sécurisées</p>
+                    <div class="secure-badge d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Paiement 100% sécurisé SSL</span>
+                    </div>
+                </div>
+
+                <!-- Choix du moyen de paiement -->
+                <div class="mb-5">
+                    <h4 class="mb-4">Choisissez votre moyen de paiement</h4>
+                    
+                    <div class="row g-3">
+                        <!-- Carte bancaire -->
+                        <div class="col-md-6">
+                            <div class="card-paiement" onclick="selectPaymentMethod('carte')" id="cardCarte">
+                                <div class="carte-visuel">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-0">Carte bancaire</h5>
+                                            <small>Visa, Mastercard, etc.</small>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <i class="bi bi-credit-card-2-front"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paiement" id="carte" checked>
+                                        <label class="form-check-label" for="carte">
+                                            Payer par carte
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mobile Money -->
+                        <div class="col-md-6">
+                            <div class="card-paiement" onclick="selectPaymentMethod('mobile')" id="cardMobile">
+                                <div class="text-center py-3">
+                                    <div class="d-flex justify-content-center gap-3 mb-3">
+                                        <div class="mobile-money-logo orange">
+                                            <i class="bi bi-phone"></i>
+                                        </div>
+                                        <div class="mobile-money-logo mvola">
+                                            <i class="bi bi-currency-exchange"></i>
+                                        </div>
+                                        <div class="mobile-money-logo airtel">
+                                            <i class="bi bi-cash"></i>
+                                        </div>
+                                    </div>
+                                    <h5>Mobile Money</h5>
+                                    <small>Orange Money, Mvola, Airtel Money</small>
+                                </div>
+                                <div class="text-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paiement" id="mobile">
+                                        <label class="form-check-label" for="mobile">
+                                            Payer par mobile
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire carte bancaire -->
+                <div id="formCarte">
+                    <h4 class="mb-4">Informations de la carte</h4>
+                    
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Numéro de carte *</label>
+                            <div class="carte-champ">
+                                <input type="text" class="form-control" 
+                                       placeholder="1234 5678 9012 3456" 
+                                       maxlength="19"
+                                       oninput="formatCardNumber(this)">
+                                <div class="carte-icon">
+                                    <i class="bi bi-credit-card visa" id="cardTypeIcon"></i>
+                                </div>
+                            </div>
+                            <small class="text-muted">Sans espaces ni tirets</small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Date d'expiration *</label>
+                            <input type="text" class="form-control" placeholder="MM/AA" maxlength="5"
+                                   oninput="formatExpirationDate(this)">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">CVV * 
+                                <i class="bi bi-question-circle cvv-info" 
+                                   data-bs-toggle="tooltip" 
+                                   title="3 chiffres au dos de votre carte"></i>
+                            </label>
+                            <input type="password" class="form-control" placeholder="123" maxlength="4">
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Nom sur la carte *</label>
+                            <input type="text" class="form-control" placeholder="JEAN DUPONT">
+                        </div>
+                        
+                        <div class="col-md-12 mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="saveCard">
+                                <label class="form-check-label" for="saveCard">
+                                    Enregistrer cette carte pour de futurs paiements
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire Mobile Money -->
+                <div id="formMobile" style="display: none;">
+                    <h4 class="mb-4">Mobile Money</h4>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Opérateur *</label>
+                            <select class="form-select" id="mobileOperator">
+                                <option value="">Choisir un opérateur</option>
+                                <option value="orange">Orange Money</option>
+                                <option value="mvola">Mvola</option>
+                                <option value="airtel">Airtel Money</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Numéro de téléphone *</label>
+                            <input type="tel" class="form-control" placeholder="+261 34 12 345 67">
+                        </div>
+                        
+                        <div class="col-md-12 mb-4">
+                            <div class="alert alert-info">
+                                <h6><i class="bi bi-info-circle"></i> Instructions :</h6>
+                                <ol class="mb-0">
+                                    <li>Sélectionnez votre opérateur</li>
+                                    <li>Entrez votre numéro de téléphone</li>
+                                    <li>Validez le paiement</li>
+                                    <li>Confirmez la transaction sur votre téléphone</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conditions générales -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="conditions" required>
+                            <label class="form-check-label" for="conditions">
+                                J'accepte les 
+                                <a href="#" class="text-primary">conditions générales de vente</a> 
+                                et la 
+                                <a href="#" class="text-primary">politique de confidentialité</a>.
+                                Je comprends que ce paiement est non remboursable sauf conditions d'annulation.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Récapitulatif et validation -->
+            <div class="col-lg-5">
+                <div class="card shadow-lg sticky-top" style="top: 20px;">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-receipt"></i> Récapitulatif de commande</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Détails du vol -->
+                        <div class="mb-4">
+                            <h6>Vol MK101</h6>
+                            <p class="mb-1">
+                                TNR → CDG • 15/01/2026<br>
+                                08:00 - 16:00 (8h00)
+                            </p>
+                            <p class="mb-0">
+                                <small>Siège: 13A • Passager: Jean Dupont</small>
+                            </p>
+                        </div>
+                        
+                        <!-- Détail des prix -->
+                        <div class="mb-4">
+                            <h6>Détail des prix</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Vol (1 passager):</span>
+                                <span>€450.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Siège fenêtre:</span>
+                                <span>€0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Bagage supplémentaire:</span>
+                                <span>€30.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Repas végétarien:</span>
+                                <span>€10.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Frais de service:</span>
+                                <span>€10.00</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold fs-5">
+                                <span>Total à payer:</span>
+                                <span class="text-primary">€500.00</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Informations de facturation -->
+                        <div class="mb-4">
+                            <h6>Facturation</h6>
+                            <p class="mb-1">
+                                <strong>Jean Dupont</strong><br>
+                                jean.dupont@email.com<br>
+                                +261 34 12 345 67
+                            </p>
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i>
+                                La facture sera envoyée à cette adresse email
+                            </small>
+                        </div>
+                        
+                        <!-- Bouton de paiement -->
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success btn-lg" onclick="processPayment()" id="btnPayer">
+                                <i class="bi bi-lock-fill"></i> Payer €500.00
+                            </button>
+                            <a th:href="@{/reservation/} + ${volId} + '/options'" 
+                               class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-left"></i> Retour aux options
+                            </a>
+                        </div>
+                        
+                        <!-- Garanties -->
+                        <div class="mt-4">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-shield-check text-success me-2"></i>
+                                <small>Paiement 100% sécurisé SSL</small>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-credit-card text-primary me-2"></i>
+                                <small>Aucune information bancaire stockée</small>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-headset text-info me-2"></i>
+                                <small>Assistance 24h/24 au +261 20 22 222 22</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Méthodes de paiement acceptées -->
+                <div class="card mt-4">
+                    <div class="card-body text-center">
+                        <h6>Méthodes de paiement acceptées</h6>
+                        <div class="d-flex justify-content-center gap-3 mt-3">
+                            <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa" style="height: 30px;">
+                            <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="Mastercard" style="height: 30px;">
+                            <img src="https://img.icons8.com/color/48/000000/american-express.png" alt="Amex" style="height: 30px;">
+                            <img src="https://img.icons8.com/color/48/000000/paypal.png" alt="PayPal" style="height: 30px;">
+                        </div>
+                        <div class="d-flex justify-content-center gap-3 mt-2">
+                            <div class="badge bg-orange text-white">Orange Money</div>
+                            <div class="badge bg-primary">Mvola</div>
+                            <div class="badge bg-danger">Airtel Money</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Traitement du paiement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="spinner-border text-primary mb-3" role="status" id="paymentSpinner">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <h5 id="paymentMessage">Vérification de votre paiement...</h5>
+                    <p class="text-muted" id="paymentDetails">
+                        Veuillez patienter pendant que nous traitons votre paiement.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialiser les tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Sélectionner la carte par défaut
+            selectPaymentMethod('carte');
+        });
+        
+        // Sélectionner la méthode de paiement
+        function selectPaymentMethod(method) {
+            // Mettre à jour les cartes
+            document.getElementById('cardCarte').classList.remove('selected');
+            document.getElementById('cardMobile').classList.remove('selected');
+            
+            // Mettre à jour les radio buttons
+            document.getElementById('carte').checked = (method === 'carte');
+            document.getElementById('mobile').checked = (method === 'mobile');
+            
+            // Afficher/masquer les formulaires
+            if (method === 'carte') {
+                document.getElementById('formCarte').style.display = 'block';
+                document.getElementById('formMobile').style.display = 'none';
+                document.getElementById('cardCarte').classList.add('selected');
+            } else {
+                document.getElementById('formCarte').style.display = 'none';
+                document.getElementById('formMobile').style.display = 'block';
+                document.getElementById('cardMobile').classList.add('selected');
+            }
+        }
+        
+        // Formater le numéro de carte
+        function formatCardNumber(input) {
+            let value = input.value.replace(/\D/g, '');
+            let formatted = '';
+            
+            for (let i = 0; i < value.length && i < 16; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formatted += ' ';
+                }
+                formatted += value[i];
+            }
+            
+            input.value = formatted;
+            
+            // Détecter le type de carte
+            detectCardType(value);
+        }
+        
+        // Détecter le type de carte
+        function detectCardType(number) {
+            const icon = document.getElementById('cardTypeIcon');
+            
+            if (number.startsWith('4')) {
+                icon.className = 'bi bi-credit-card visa';
+            } else if (number.startsWith('5')) {
+                icon.className = 'bi bi-credit-card mastercard';
+            } else if (number.startsWith('3')) {
+                icon.className = 'bi bi-credit-card text-dark';
+            } else {
+                icon.className = 'bi bi-credit-card';
+            }
+        }
+        
+        // Formater la date d'expiration
+        function formatExpirationDate(input) {
+            let value = input.value.replace(/\D/g, '');
+            
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            
+            input.value = value;
+        }
+        
+        // Traiter le paiement
+        function processPayment() {
+            // Vérifier les conditions
+            if (!document.getElementById('conditions').checked) {
+                alert('Veuillez accepter les conditions générales.');
+                return;
+            }
+            
+            // Vérifier le formulaire
+            const method = document.querySelector('input[name="paiement"]:checked').id;
+            
+            if (method === 'carte') {
+                const cardNumber = document.querySelector('#formCarte input[placeholder*="1234"]').value;
+                const expiration = document.querySelector('#formCarte input[placeholder="MM/AA"]').value;
+                const cvv = document.querySelector('#formCarte input[placeholder="123"]').value;
+                const name = document.querySelector('#formCarte input[placeholder*="JEAN"]').value;
+                
+                if (!cardNumber || !expiration || !cvv || !name) {
+                    alert('Veuillez remplir tous les champs de la carte.');
+                    return;
+                }
+                
+                if (cardNumber.replace(/\s/g, '').length < 16) {
+                    alert('Le numéro de carte est invalide.');
+                    return;
+                }
+            } else {
+                const operator = document.getElementById('mobileOperator').value;
+                const phone = document.querySelector('#formMobile input[type="tel"]').value;
+                
+                if (!operator || !phone) {
+                    alert('Veuillez sélectionner un opérateur et entrer votre numéro.');
+                    return;
+                }
+            }
+            
+            // Afficher le modal
+            const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            modal.show();
+            
+            // Simuler le traitement
+            setTimeout(() => {
+                document.getElementById('paymentSpinner').style.display = 'none';
+                document.getElementById('paymentMessage').textContent = 'Paiement accepté !';
+                document.getElementById('paymentMessage').className = 'text-success';
+                document.getElementById('paymentDetails').textContent = 'Votre réservation a été confirmée.';
+                
+                // Rediriger après 2 secondes
+                setTimeout(() => {
+                    modal.hide();
+                    window.location.href = '/reservation/confirmation/123456';
+                }, 2000);
+            }, 3000);
+        }
+        
+        // Écouteurs pour les cartes de paiement
+        document.getElementById('cardCarte').addEventListener('click', () => selectPaymentMethod('carte'));
+        document.getElementById('cardMobile').addEventListener('click', () => selectPaymentMethod('mobile'));
+        
+        // Écouteurs pour les radio buttons
+        document.getElementById('carte').addEventListener('change', () => selectPaymentMethod('carte'));
+        document.getElementById('mobile').addEventListener('change', () => selectPaymentMethod('mobile'));
+    </script>
+</body>
+</html>

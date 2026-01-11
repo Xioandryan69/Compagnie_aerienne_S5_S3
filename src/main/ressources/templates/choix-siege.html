@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choix du siège - ITU Airlines</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        .plan-avion {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .rangee {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            align-items: center;
+        }
+        .rangee-numero {
+            width: 40px;
+            text-align: center;
+            font-weight: bold;
+            color: #666;
+        }
+        .siege {
+            width: 45px;
+            height: 45px;
+            margin: 3px;
+            border: 2px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+        .siege:hover {
+            transform: scale(1.1);
+        }
+        .siege.disponible {
+            background-color: #e9ecef;
+            color: #333;
+        }
+        .siege.disponible:hover {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+        .siege.selectionne {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+            box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+        }
+        .siege.occupe {
+            background-color: #dc3545;
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .siege.premium {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+        .siege.fenetre {
+            background-color: #20c997;
+            color: white;
+        }
+        .siege.couloir {
+            background-color: #6f42c1;
+            color: white;
+        }
+        .couloir {
+            width: 80px;
+            height: 3px;
+            background: #666;
+            margin: 0 10px;
+        }
+        .legende-item {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+        .selection-info {
+            background: #e7f1ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .section-avion {
+            margin-bottom: 30px;
+        }
+        .cabine-titre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .option-hublot, .option-couloir {
+            cursor: pointer;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .option-hublot:hover, .option-couloir:hover {
+            border-color: #0d6efd;
+            background: #f8f9fa;
+        }
+        .option-hublot.active {
+            border-color: #20c997;
+            background: #e8f8f3;
+        }
+        .option-couloir.active {
+            border-color: #6f42c1;
+            background: #f0e8ff;
+        }
+        .siege-extra {
+            border: 2px dashed #dee2e6;
+            background: transparent;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">ITU Airlines</a>
+            <div class="navbar-text text-white">
+                Étape 3/5 - Choix du siège
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- En-tête -->
+                <div class="text-center mb-4">
+                    <h2>Choisissez votre siège</h2>
+                    <p class="text-muted">
+                        Vol <span th:text="${volId}">MK101</span> • 
+                        Sélectionnez un siège disponible en vert
+                    </p>
+                </div>
+
+                <!-- Options de préférence -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-gear"></i> Préférences de siège</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h6>Type de siège</h6>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="option-hublot" onclick="selectPreference('fenetre')" id="optionFenetre">
+                                            <i class="bi bi-window" style="font-size: 2em; color: #20c997;"></i>
+                                            <div>Fenêtre</div>
+                                            <small class="text-muted">Vue extérieure</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="option-couloir" onclick="selectPreference('couloir')" id="optionCouloir">
+                                            <i class="bi bi-arrow-left-right" style="font-size: 2em; color: #6f42c1;"></i>
+                                            <div>Couloir</div>
+                                            <small class="text-muted">Accès facile</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Suggestions</h6>
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i>
+                                    <strong>Conseil :</strong> Les sièges près des issues de secours 
+                                    offrent plus d'espace pour les jambes.
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm" onclick="suggererSiege()">
+                                    <i class="bi bi-magic"></i> Trouver un siège pour moi
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan de l'avion -->
+                <div class="plan-avion shadow">
+                    <!-- Cabine Affaires -->
+                    <div class="section-avion">
+                        <div class="cabine-titre">
+                            <i class="bi bi-star-fill text-warning"></i> Cabine Affaires
+                        </div>
+                        
+                        <!-- Rangées 1-3 -->
+                        <div class="rangee">
+                            <div class="rangee-numero">1</div>
+                            <div class="siege siege-extra">WC</div>
+                            <div class="couloir"></div>
+                            <div class="siege premium disponible" data-siege="1A">1A</div>
+                            <div class="siege premium disponible" data-siege="1B">1B</div>
+                            <div class="couloir"></div>
+                            <div class="siege premium occupe" data-siege="1C">1C</div>
+                            <div class="siege premium disponible" data-siege="1D">1D</div>
+                            <div class="couloir"></div>
+                            <div class="siege siege-extra">WC</div>
+                        </div>
+                        
+                        <div class="rangee">
+                            <div class="rangee-numero">2</div>
+                            <div class="siege siege-extra"></div>
+                            <div class="couloir"></div>
+                            <div class="siege premium disponible" data-siege="2A">2A</div>
+                            <div class="siege premium disponible" data-siege="2B">2B</div>
+                            <div class="couloir"></div>
+                            <div class="siege premium disponible" data-siege="2C">2C</div>
+                            <div class="siege premium disponible" data-siege="2D">2D</div>
+                            <div class="couloir"></div>
+                            <div class="siege siege-extra"></div>
+                        </div>
+                        
+                        <!-- Séparation cabines -->
+                        <div class="text-center my-4">
+                            <hr>
+                            <small class="text-muted">SÉPARATION DES CABINES</small>
+                            <hr>
+                        </div>
+                    </div>
+
+                    <!-- Cabine Économique -->
+                    <div class="section-avion">
+                        <div class="cabine-titre">
+                            <i class="bi bi-people-fill"></i> Cabine Économique
+                        </div>
+                        
+                        <!-- Rangées 10-35 -->
+                        <div id="rangeesEconomique">
+                            <!-- Généré par JavaScript -->
+                        </div>
+                        
+                        <!-- Issues de secours -->
+                        <div class="rangee">
+                            <div class="rangee-numero">12</div>
+                            <div class="siege siege-extra">EXIT</div>
+                            <div class="couloir"></div>
+                            <div class="siege disponible siege-extra" title="Espace supplémentaire">12A</div>
+                            <div class="siege disponible siege-extra" title="Espace supplémentaire">12B</div>
+                            <div class="couloir"></div>
+                            <div class="siege disponible siege-extra" title="Espace supplémentaire">12C</div>
+                            <div class="siege disponible siege-extra" title="Espace supplémentaire">12D</div>
+                            <div class="couloir"></div>
+                            <div class="siege siege-extra">EXIT</div>
+                        </div>
+                        
+                        <!-- Rangées normales -->
+                        <div class="rangee">
+                            <div class="rangee-numero">13</div>
+                            <div class="siege fenetre disponible" data-siege="13A">13A</div>
+                            <div class="siege disponible" data-siege="13B">13B</div>
+                            <div class="couloir"></div>
+                            <div class="siege disponible" data-siege="13C">13C</div>
+                            <div class="siege couloir disponible" data-siege="13D">13D</div>
+                            <div class="couloir"></div>
+                            <div class="siege siege-extra">WC</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Légende -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h6>Légende :</h6>
+                        <div class="d-flex flex-wrap">
+                            <div class="legende-item">
+                                <div class="siege disponible me-2"></div>
+                                <span>Disponible</span>
+                            </div>
+                            <div class="legende-item">
+                                <div class="siege selectionne me-2"></div>
+                                <span>Sélectionné</span>
+                            </div>
+                            <div class="legende-item">
+                                <div class="siege occupe me-2"></div>
+                                <span>Occupé</span>
+                            </div>
+                            <div class="legende-item">
+                                <div class="siege premium me-2"></div>
+                                <span>Affaires/Premium</span>
+                            </div>
+                            <div class="legende-item">
+                                <div class="siege fenetre me-2"></div>
+                                <span>Fenêtre</span>
+                            </div>
+                            <div class="legende-item">
+                                <div class="siege couloir me-2"></div>
+                                <span>Couloir</span>
+                            </div>
+                            <div class="legende-item">
+                                <div class="siege siege-extra me-2"></div>
+                                <span>Toilettes/Issue</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations de sélection -->
+                <div class="selection-info mt-4" id="selectionInfo" style="display: none;">
+                    <h5><i class="bi bi-check-circle text-success"></i> Siège sélectionné</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Siège :</strong> <span id="siegeSelectionne">-</span></p>
+                            <p><strong>Type :</strong> <span id="typeSiege">-</span></p>
+                            <p><strong>Cabine :</strong> <span id="cabineSiege">-</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Supplément :</strong> <span id="supplementSiege">€0.00</span></p>
+                            <p><strong>Avantages :</strong> <span id="avantagesSiege">-</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="d-flex justify-content-between mt-5">
+                    <a th:href="@{/reservation/} + ${volId}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour aux informations
+                    </a>
+                    <div>
+                        <button class="btn btn-outline-primary me-2" onclick="annulerSelection()">
+                            <i class="bi bi-x-circle"></i> Annuler la sélection
+                        </button>
+                        <a th:href="@{/reservation/} + ${volId} + '/options'" 
+                           class="btn btn-primary" id="btnContinuer" disabled>
+                            Continuer <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Note importante -->
+                <div class="alert alert-warning mt-4">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Important :</strong> La sélection de siège peut engendrer des frais supplémentaires.
+                    Les sièges près des issues de secours ne sont pas recommandés pour les personnes à mobilité réduite.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variables globales
+        let siegeSelectionne = null;
+        let preference = '';
+        
+        // Générer les rangées économiques
+        function genererRangeesEconomique() {
+            const container = document.getElementById('rangeesEconomique');
+            let html = '';
+            
+            // Générer rangées 10 à 35
+            for (let r = 10; r <= 35; r++) {
+                const occupeA = Math.random() < 0.3;
+                const occupeB = Math.random() < 0.4;
+                const occupeC = Math.random() < 0.5;
+                const occupeD = Math.random() < 0.3;
+                
+                html += `<div class="rangee">
+                    <div class="rangee-numero">${r}</div>
+                    <div class="siege fenetre ${occupeA ? 'occupe' : 'disponible'}" data-siege="${r}A">${r}A</div>
+                    <div class="siege ${occupeB ? 'occupe' : 'disponible'}" data-siege="${r}B">${r}B</div>
+                    <div class="couloir"></div>
+                    <div class="siege ${occupeC ? 'occupe' : 'disponible'}" data-siege="${r}C">${r}C</div>
+                    <div class="siege couloir ${occupeD ? 'occupe' : 'disponible'}" data-siege="${r}D">${r}D</div>
+                </div>`;
+            }
+            
+            container.innerHTML = html;
+            
+            // Ajouter événements aux sièges
+            document.querySelectorAll('.siege.disponible').forEach(siege => {
+                siege.addEventListener('click', function() {
+                    selectionnerSiege(this);
+                });
+            });
+        }
+        
+        // Sélectionner un siège
+        function selectionnerSiege(element) {
+            // Désélectionner précédent
+            if (siegeSelectionne) {
+                siegeSelectionne.classList.remove('selectionne');
+                siegeSelectionne.classList.add('disponible');
+            }
+            
+            // Sélectionner nouveau
+            siegeSelectionne = element;
+            element.classList.remove('disponible');
+            element.classList.add('selectionne');
+            
+            // Mettre à jour l'affichage
+            const siegeNum = element.dataset.siege;
+            document.getElementById('siegeSelectionne').textContent = siegeNum;
+            
+            // Déterminer le type de siège
+            let type = 'Standard';
+            let cabine = 'Économique';
+            let supplement = '€0.00';
+            let avantages = 'Siège standard';
+            
+            if (element.classList.contains('premium')) {
+                type = 'Affaires';
+                cabine = 'Affaires';
+                supplement = '€150.00';
+                avantages = 'Espace supplémentaire, repas premium, service prioritaire';
+            } else if (element.classList.contains('fenetre')) {
+                type = 'Fenêtre';
+                avantages = 'Vue extérieure, accoudoir côté fenêtre';
+            } else if (element.classList.contains('couloir')) {
+                type = 'Couloir';
+                avantages = 'Accès facile au couloir, sortie rapide';
+            }
+            
+            // Si c'est une rangée issue de secours
+            if (siegeNum && (siegeNum.includes('12A') || siegeNum.includes('12B') || 
+                siegeNum.includes('12C') || siegeNum.includes('12D'))) {
+                supplement = '€50.00';
+                avantages += ', espace supplémentaire pour les jambes';
+            }
+            
+            document.getElementById('typeSiege').textContent = type;
+            document.getElementById('cabineSiege').textContent = cabine;
+            document.getElementById('supplementSiege').textContent = supplement;
+            document.getElementById('avantagesSiege').textContent = avantages;
+            
+            // Afficher les informations
+            document.getElementById('selectionInfo').style.display = 'block';
+            
+            // Activer le bouton continuer
+            document.getElementById('btnContinuer').disabled = false;
+            
+            // Sauvegarder dans le localStorage
+            localStorage.setItem('siegeSelectionne', siegeNum);
+            localStorage.setItem('supplementSiege', supplement);
+        }
+        
+        // Sélectionner une préférence
+        function selectPreference(type) {
+            preference = type;
+            
+            // Mettre à jour l'interface
+            document.getElementById('optionFenetre').classList.remove('active');
+            document.getElementById('optionCouloir').classList.remove('active');
+            
+            if (type === 'fenetre') {
+                document.getElementById('optionFenetre').classList.add('active');
+            } else if (type === 'couloir') {
+                document.getElementById('optionCouloir').classList.add('active');
+            }
+            
+            // Si un siège est déjà sélectionné, suggérer un changement
+            if (siegeSelectionne) {
+                suggererSiege();
+            }
+        }
+        
+        // Suggérer un siège
+        function suggererSiege() {
+            let siegesDisponibles = Array.from(document.querySelectorAll('.siege.disponible'));
+            
+            if (siegesDisponibles.length === 0) {
+                alert('Aucun siège disponible. Veuillez contacter le service client.');
+                return;
+            }
+            
+            // Filtrer selon la préférence
+            if (preference === 'fenetre') {
+                siegesDisponibles = siegesDisponibles.filter(s => s.classList.contains('fenetre'));
+            } else if (preference === 'couloir') {
+                siegesDisponibles = siegesDisponibles.filter(s => s.classList.contains('couloir'));
+            }
+            
+            // Si aucun siège ne correspond à la préférence, prendre tous les disponibles
+            if (siegesDisponibles.length === 0) {
+                siegesDisponibles = Array.from(document.querySelectorAll('.siege.disponible'));
+            }
+            
+            // Choisir un siège au hasard
+            const siegeAleatoire = siegesDisponibles[Math.floor(Math.random() * siegesDisponibles.length)];
+            
+            // Sélectionner le siège
+            selectionnerSiege(siegeAleatoire);
+            
+            // Faire défiler jusqu'au siège
+            siegeAleatoire.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Animation
+            siegeAleatoire.style.animation = 'pulse 0.5s 3';
+            setTimeout(() => {
+                siegeAleatoire.style.animation = '';
+            }, 1500);
+        }
+        
+        // Annuler la sélection
+        function annulerSelection() {
+            if (siegeSelectionne) {
+                siegeSelectionne.classList.remove('selectionne');
+                siegeSelectionne.classList.add('disponible');
+                siegeSelectionne = null;
+            }
+            
+            document.getElementById('selectionInfo').style.display = 'none';
+            document.getElementById('btnContinuer').disabled = true;
+            localStorage.removeItem('siegeSelectionne');
+            localStorage.removeItem('supplementSiege');
+        }
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            genererRangeesEconomique();
+            
+            // Récupérer la sélection précédente
+            const siegeSauvegarde = localStorage.getItem('siegeSelectionne');
+            if (siegeSauvegarde) {
+                const element = document.querySelector(`[data-siege="${siegeSauvegarde}"]`);
+                if (element) {
+                    selectionnerSiege(element);
+                }
+            }
+            
+            // Ajouter style d'animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.1); }
+                    100% { transform: scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

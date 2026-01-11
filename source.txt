@@ -1,0 +1,925 @@
+========================================================================
+=== Fichier Java: src/main/java/com/aerienne/AerienneApplication.java
+========================================================================
+
+package com.aerienne;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class AerienneApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(AerienneApplication.class, args);
+    }
+}
+
+========================================================================
+=== Fichier Java: src/main/java/controller/AdminController.java
+========================================================================
+
+package controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class AdminController {
+    
+    @GetMapping("/admin")
+    public String dashboard(Model model) {
+        return "admin";
+    }
+    
+    @GetMapping("/compte")
+    public String compteClient(Model model) {
+        return "compte-client";
+    }
+    
+    @GetMapping("/connexion")
+    public String connexion(Model model) {
+        return "connexion";
+    }
+    
+    @GetMapping("/admin/vols")
+    public String gestionVols(Model model) {
+        return "gestion-vols";
+    }
+    
+    @GetMapping("/admin/avions")
+    public String gestionAvions(Model model) {
+        return "gestion-avions";
+    }
+    
+    @GetMapping("/admin/aeroports")
+    public String gestionAeroports(Model model) {
+        return "gestion-aeroports";
+    }
+    
+    @GetMapping("/admin/passagers")
+    public String gestionPassagers(Model model) {
+        return "gestion-passagers";
+    }
+    
+    @GetMapping("/deconnexion")
+    public String deconnexion() {
+        return "redirect:/";
+    }
+}
+
+========================================================================
+=== Fichier Java: src/main/java/controller/HomeController.java
+========================================================================
+
+package controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import dto.RechercheDTO;
+
+@Controller
+public class HomeController {
+
+    @GetMapping("/")
+    public String home(Model model) {
+        model.addAttribute("titre", "Bienvenue chez ITU Airlines");
+        model.addAttribute("message", "Voyagez loin, payez juste.");
+        model.addAttribute("recherche", new RechercheDTO());
+        
+        // Données statiques pour les aéroports
+        model.addAttribute("aeroports", getAeroportsStatiques());
+        
+        return "index";
+    }
+    
+    @PostMapping("/rechercher")
+    public String rechercherVols(@ModelAttribute RechercheDTO recherche, Model model) {
+        model.addAttribute("critere", recherche);
+        
+        // Simuler des résultats de recherche avec données statiques
+        model.addAttribute("vols", getVolsStatiques());
+        
+        return "vols";
+    }
+    
+    // Méthodes pour données statiques
+    private java.util.List<entity.Aeroport> getAeroportsStatiques() {
+        java.util.List<entity.Aeroport> aeroports = new java.util.ArrayList<>();
+        aeroports.add(new entity.Aeroport("TNR", "Ivato", "Antananarivo", "Madagascar"));
+        aeroports.add(new entity.Aeroport("CDG", "Charles de Gaulle", "Paris", "France"));
+        aeroports.add(new entity.Aeroport("JFK", "John F. Kennedy", "New York", "USA"));
+        aeroports.add(new entity.Aeroport("LHR", "Heathrow", "London", "UK"));
+        return aeroports;
+    }
+    
+    private java.util.List<entity.Vol> getVolsStatiques() {
+        java.util.List<entity.Vol> vols = new java.util.ArrayList<>();
+        
+        // Créer des vols de test
+        vols.add(new entity.Vol(1L, "MK101", 
+            java.time.LocalDate.of(2026, 1, 15),
+            java.time.LocalTime.of(8, 0),
+            java.time.LocalTime.of(16, 0),
+            450.00, "TNR", "CDG", 1L));
+        
+        vols.add(new entity.Vol(2L, "MK102",
+            java.time.LocalDate.of(2026, 1, 16),
+            java.time.LocalTime.of(10, 0),
+            java.time.LocalTime.of(18, 0),
+            470.00, "TNR", "CDG", 2L));
+        
+        vols.add(new entity.Vol(3L, "MK201",
+            java.time.LocalDate.of(2026, 1, 15),
+            java.time.LocalTime.of(12, 0),
+            java.time.LocalTime.of(16, 0),
+            300.00, "CDG", "JFK", 1L));
+            
+        return vols;
+    }
+}
+
+========================================================================
+=== Fichier Java: src/main/java/controller/ReservationController.java
+========================================================================
+
+package controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+@Controller
+public class ReservationController {
+    
+    @GetMapping("/reservation/{volId}")
+    public String formulairePassager(@PathVariable Long volId, Model model) {
+        // Récupérer le vol
+        entity.Vol vol = getVolById(volId);
+        
+        if (vol != null) {
+            model.addAttribute("vol", vol);
+            model.addAttribute("passager", new entity.Passager());
+            return "informations-passager";
+        }
+        
+        return "redirect:/vols";
+    }
+    
+    @PostMapping("/reservation/{volId}/passager")
+    public String traiterPassager(@PathVariable Long volId, 
+                                 @ModelAttribute entity.Passager passager,
+                                 Model model) {
+        // Enregistrer les infos passager (simulation)
+        passager.setId(1L);
+        
+        model.addAttribute("volId", volId);
+        model.addAttribute("passager", passager);
+        
+        return "choix-siege";
+    }
+    
+    @GetMapping("/reservation/{volId}/siege")
+    public String choixSiege(@PathVariable Long volId, Model model) {
+        model.addAttribute("volId", volId);
+        // Simuler des sièges
+        model.addAttribute("sieges", getSiegesStatiques());
+        return "choix-siege";
+    }
+    
+    @GetMapping("/reservation/{volId}/options")
+    public String optionsSupplementaires(@PathVariable Long volId, Model model) {
+        model.addAttribute("volId", volId);
+        model.addAttribute("options", getOptionsStatiques());
+        return "options";
+    }
+    
+    @GetMapping("/reservation/{volId}/paiement")
+    public String paiement(@PathVariable Long volId, Model model) {
+        entity.Vol vol = getVolById(volId);
+        if (vol != null) {
+            model.addAttribute("vol", vol);
+            model.addAttribute("total", vol.getPrix() + 30.00); // Prix + option
+            return "paiement";
+        }
+        return "redirect:/vols";
+    }
+    
+    @GetMapping("/reservation/confirmation/{id}")
+    public String confirmation(@PathVariable Long id, Model model) {
+        // Simuler une réservation
+        entity.Reservation reservation = new entity.Reservation();
+        reservation.setId(id);
+        reservation.setDateReservation(java.time.LocalDateTime.now());
+        reservation.setStatut("CONFIRME");
+        
+        entity.Vol vol = getVolById(1L);
+        if (vol != null) {
+            reservation.setVol(vol);
+        }
+        
+        model.addAttribute("reservation", reservation);
+        return "confirmation";
+    }
+    
+    // Méthodes utilitaires
+    private entity.Vol getVolById(Long id) {
+        if (id == 1L) {
+            return new entity.Vol(1L, "MK101", 
+                java.time.LocalDate.of(2026, 1, 15),
+                java.time.LocalTime.of(8, 0),
+                java.time.LocalTime.of(16, 0),
+                450.00, "TNR", "CDG", 1L);
+        }
+        return null;
+    }
+    
+    private java.util.List<String> getSiegesStatiques() {
+        java.util.List<String> sieges = new java.util.ArrayList<>();
+        for (int i = 1; i <= 30; i++) {
+            sieges.add("A" + i);
+            sieges.add("B" + i);
+            sieges.add("C" + i);
+            sieges.add("D" + i);
+        }
+        return sieges;
+    }
+    
+    private java.util.List<entity.OptionSupplementaire> getOptionsStatiques() {
+        java.util.List<entity.OptionSupplementaire> options = new java.util.ArrayList<>();
+        options.add(new entity.OptionSupplementaire(1L, "BAGAGE", "+1 bagage 23kg", 30.00, null));
+        options.add(new entity.OptionSupplementaire(2L, "REPAS", "Repas végétarien", 10.00, null));
+        options.add(new entity.OptionSupplementaire(3L, "ASSURANCE", "Assurance voyage", 20.00, null));
+        return options;
+    }
+}
+
+========================================================================
+=== Fichier Java: src/main/java/controller/VolController.java
+========================================================================
+
+package controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@Controller
+public class VolController {
+    
+    @GetMapping("/vols")
+    public String listeVols(Model model) {
+        model.addAttribute("vols", getVolsStatiques());
+        return "vols";
+    }
+    
+    @GetMapping("/vol/{id}")
+    public String detailVol(@PathVariable Long id, Model model) {
+        // Récupérer le vol par ID
+        entity.Vol vol = getVolById(id);
+        
+        if (vol != null) {
+            // Simuler les relations
+            vol.setDepart(getAeroportByCode(vol.getDepartIata()));
+            vol.setArrivee(getAeroportByCode(vol.getArriveeIata()));
+            vol.setAvion(getAvionById(vol.getAvionId()));
+            
+            model.addAttribute("vol", vol);
+            model.addAttribute("optionsSupplementaires", getOptionsStatiques());
+            return "details-vol";
+        }
+        
+        return "redirect:/vols";
+    }
+    
+    // Méthodes pour données statiques
+    private java.util.List<entity.Vol> getVolsStatiques() {
+        java.util.List<entity.Vol> vols = new java.util.ArrayList<>();
+        
+        vols.add(new entity.Vol(1L, "MK101", 
+            java.time.LocalDate.of(2026, 1, 15),
+            java.time.LocalTime.of(8, 0),
+            java.time.LocalTime.of(16, 0),
+            450.00, "TNR", "CDG", 1L));
+        
+        vols.add(new entity.Vol(2L, "MK102",
+            java.time.LocalDate.of(2026, 1, 16),
+            java.time.LocalTime.of(10, 0),
+            java.time.LocalTime.of(18, 0),
+            470.00, "TNR", "CDG", 2L));
+        
+        return vols;
+    }
+    
+    private entity.Vol getVolById(Long id) {
+        for (entity.Vol vol : getVolsStatiques()) {
+            if (vol.getId().equals(id)) {
+                return vol;
+            }
+        }
+        return null;
+    }
+    
+    private entity.Aeroport getAeroportByCode(String code) {
+        if ("TNR".equals(code)) {
+            return new entity.Aeroport("TNR", "Ivato", "Antananarivo", "Madagascar");
+        } else if ("CDG".equals(code)) {
+            return new entity.Aeroport("CDG", "Charles de Gaulle", "Paris", "France");
+        } else if ("JFK".equals(code)) {
+            return new entity.Aeroport("JFK", "John F. Kennedy", "New York", "USA");
+        }
+        return null;
+    }
+    
+    private entity.Avion getAvionById(Long id) {
+        if (id == 1L) {
+            return new entity.Avion(1L, "Airbus A320", 180, "DISPONIBLE");
+        } else if (id == 2L) {
+            return new entity.Avion(2L, "Boeing 737", 160, "DISPONIBLE");
+        }
+        return null;
+    }
+    
+    private java.util.List<entity.OptionSupplementaire> getOptionsStatiques() {
+        java.util.List<entity.OptionSupplementaire> options = new java.util.ArrayList<>();
+        options.add(new entity.OptionSupplementaire(1L, "BAGAGE", "+1 bagage 23kg", 30.00, null));
+        options.add(new entity.OptionSupplementaire(2L, "REPAS", "Repas végétarien", 10.00, null));
+        options.add(new entity.OptionSupplementaire(3L, "ASSURANCE", "Assurance voyage", 20.00, null));
+        return options;
+    }
+}
+
+========================================================================
+=== Fichier Java: src/main/java/dto/RechercheDTO.java
+========================================================================
+
+package dto;
+
+import java.time.LocalDate;
+
+public class RechercheDTO {
+    private String depart;
+    private String arrivee;
+    private LocalDate dateDepart;
+    private LocalDate dateRetour;
+    private int nombrePassagers;
+    private String classe;
+    
+    // Constructeurs
+    public RechercheDTO() {}
+    
+    public RechercheDTO(String depart, String arrivee, LocalDate dateDepart, 
+                       LocalDate dateRetour, int nombrePassagers, String classe) {
+        this.depart = depart;
+        this.arrivee = arrivee;
+        this.dateDepart = dateDepart;
+        this.dateRetour = dateRetour;
+        this.nombrePassagers = nombrePassagers;
+        this.classe = classe;
+    }
+    
+    // Getters/Setters
+    public String getDepart() { return depart; }
+    public void setDepart(String depart) { this.depart = depart; }
+    
+    public String getArrivee() { return arrivee; }
+    public void setArrivee(String arrivee) { this.arrivee = arrivee; }
+    
+    public LocalDate getDateDepart() { return dateDepart; }
+    public void setDateDepart(LocalDate dateDepart) { this.dateDepart = dateDepart; }
+    
+    public LocalDate getDateRetour() { return dateRetour; }
+    public void setDateRetour(LocalDate dateRetour) { this.dateRetour = dateRetour; }
+    
+    public int getNombrePassagers() { return nombrePassagers; }
+    public void setNombrePassagers(int nombrePassagers) { this.nombrePassagers = nombrePassagers; }
+    
+    public String getClasse() { return classe; }
+    public void setClasse(String classe) { this.classe = classe; }
+}
+
+========================================================================
+=== Fichier Java: src/main/java/dto/ReservationDTO.java
+========================================================================
+
+
+
+========================================================================
+=== Fichier Java: src/main/java/entity/Aeroport.java
+========================================================================
+
+package entity;
+
+public class Aeroport {
+    private String codeIata;
+    private String nom;
+    private String ville;
+    private String pays;
+    
+    // Constructeurs
+    public Aeroport() {}
+    
+    public Aeroport(String codeIata, String nom, String ville, String pays) {
+        this.codeIata = codeIata;
+        this.nom = nom;
+        this.ville = ville;
+        this.pays = pays;
+    }
+    
+    // Getters/Setters
+    public String getCodeIata() { return codeIata; }
+    public void setCodeIata(String codeIata) { this.codeIata = codeIata; }
+    
+    public String getNom() { return nom; }
+    public void setNom(String nom) { this.nom = nom; }
+    
+    public String getVille() { return ville; }
+    public void setVille(String ville) { this.ville = ville; }
+    
+    public String getPays() { return pays; }
+    public void setPays(String pays) { this.pays = pays; }
+}
+
+========================================================================
+=== Fichier Java: src/main/java/entity/Avion.java
+========================================================================
+
+package entity;
+
+public class Avion {
+    private Long id;
+    private String modele;
+    private int capacite;
+    private String etat;
+    
+    // Constructeurs
+    public Avion() {}
+    
+    public Avion(Long id, String modele, int capacite, String etat) {
+        this.id = id;
+        this.modele = modele;
+        this.capacite = capacite;
+        this.etat = etat;
+    }
+    
+    // Getters/Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public String getModele() { return modele; }
+    public void setModele(String modele) { this.modele = modele; }
+    
+    public int getCapacite() { return capacite; }
+    public void setCapacite(int capacite) { this.capacite = capacite; }
+    
+    public String getEtat() { return etat; }
+    public void setEtat(String etat) { this.etat = etat; }
+}
+
+========================================================================
+=== Fichier Java: src/main/java/entity/OptionSupplementaire.java
+========================================================================
+
+package entity;
+
+public class OptionSupplementaire {
+    private Long id;
+    private String typeOption;
+    private String description;
+    private double prix;
+    private Long reservationId;
+    
+    // Constructeurs
+    public OptionSupplementaire() {}
+    
+    public OptionSupplementaire(Long id, String typeOption, String description, 
+                               double prix, Long reservationId) {
+        this.id = id;
+        this.typeOption = typeOption;
+        this.description = description;
+        this.prix = prix;
+        this.reservationId = reservationId;
+    }
+    
+    // Getters/Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public String getTypeOption() { return typeOption; }
+    public void setTypeOption(String typeOption) { this.typeOption = typeOption; }
+    
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    
+    public double getPrix() { return prix; }
+    public void setPrix(double prix) { this.prix = prix; }
+    
+    public Long getReservationId() { return reservationId; }
+    public void setReservationId(Long reservationId) { this.reservationId = reservationId; }
+}
+
+========================================================================
+=== Fichier Java: src/main/java/entity/Passager.java
+========================================================================
+
+package entity;
+
+import java.time.LocalDate;
+
+public class Passager {
+    private Long id;
+    private String nom;
+    private String prenom;
+    private LocalDate dateNaissance;
+    private String numeroDocument;
+    private String nationalite;
+    private String email;
+    private String telephone;
+    private String sexe; // Ajout pour le formulaire
+    
+    // Constructeurs
+    public Passager() {}
+    
+    public Passager(Long id, String nom, String prenom, LocalDate dateNaissance, 
+                   String numeroDocument, String nationalite, String email, 
+                   String telephone) {
+        this.id = id;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.dateNaissance = dateNaissance;
+        this.numeroDocument = numeroDocument;
+        this.nationalite = nationalite;
+        this.email = email;
+        this.telephone = telephone;
+    }
+    
+    // Getters/Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public String getNom() { return nom; }
+    public void setNom(String nom) { this.nom = nom; }
+    
+    public String getPrenom() { return prenom; }
+    public void setPrenom(String prenom) { this.prenom = prenom; }
+    
+    public LocalDate getDateNaissance() { return dateNaissance; }
+    public void setDateNaissance(LocalDate dateNaissance) { this.dateNaissance = dateNaissance; }
+    
+    public String getNumeroDocument() { return numeroDocument; }
+    public void setNumeroDocument(String numeroDocument) { this.numeroDocument = numeroDocument; }
+    
+    public String getNationalite() { return nationalite; }
+    public void setNationalite(String nationalite) { this.nationalite = nationalite; }
+    
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    
+    public String getTelephone() { return telephone; }
+    public void setTelephone(String telephone) { this.telephone = telephone; }
+    
+    public String getSexe() { return sexe; }
+    public void setSexe(String sexe) { this.sexe = sexe; }
+}
+
+========================================================================
+=== Fichier Java: src/main/java/entity/Reservation.java
+========================================================================
+
+package entity;
+
+import java.time.LocalDateTime;
+
+public class Reservation {
+    private Long id;
+    private LocalDateTime dateReservation;
+    private String statut;
+    private Long volId;
+    private Long passagerId;
+    
+    // Pour l'affichage
+    private Vol vol;
+    private Passager passager;
+    
+    // Constructeurs
+    public Reservation() {}
+    
+    public Reservation(Long id, LocalDateTime dateReservation, String statut, 
+                      Long volId, Long passagerId) {
+        this.id = id;
+        this.dateReservation = dateReservation;
+        this.statut = statut;
+        this.volId = volId;
+        this.passagerId = passagerId;
+    }
+    
+    // Getters/Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public LocalDateTime getDateReservation() { return dateReservation; }
+    public void setDateReservation(LocalDateTime dateReservation) { this.dateReservation = dateReservation; }
+    
+    public String getStatut() { return statut; }
+    public void setStatut(String statut) { this.statut = statut; }
+    
+    public Long getVolId() { return volId; }
+    public void setVolId(Long volId) { this.volId = volId; }
+    
+    public Long getPassagerId() { return passagerId; }
+    public void setPassagerId(Long passagerId) { this.passagerId = passagerId; }
+    
+    public Vol getVol() { return vol; }
+    public void setVol(Vol vol) { this.vol = vol; }
+    
+    public Passager getPassager() { return passager; }
+    public void setPassager(Passager passager) { this.passager = passager; }
+}
+
+========================================================================
+=== Fichier Java: src/main/java/entity/Vol.java
+========================================================================
+
+package entity;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+public class Vol {
+    private Long id;
+    private String numeroVol;
+    private LocalDate dateVol;
+    private LocalTime heureDepart;
+    private LocalTime heureArrivee;
+    private double prix;
+    private String departIata;
+    private String arriveeIata;
+    private Long avionId;
+    
+    // Pour l'affichage (relations)
+    private Aeroport depart;
+    private Aeroport arrivee;
+    private Avion avion;
+    
+    // Constructeurs
+    public Vol() {}
+    
+    public Vol(Long id, String numeroVol, LocalDate dateVol, LocalTime heureDepart, 
+               LocalTime heureArrivee, double prix, String departIata, 
+               String arriveeIata, Long avionId) {
+        this.id = id;
+        this.numeroVol = numeroVol;
+        this.dateVol = dateVol;
+        this.heureDepart = heureDepart;
+        this.heureArrivee = heureArrivee;
+        this.prix = prix;
+        this.departIata = departIata;
+        this.arriveeIata = arriveeIata;
+        this.avionId = avionId;
+    }
+    
+    // Getters/Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public String getNumeroVol() { return numeroVol; }
+    public void setNumeroVol(String numeroVol) { this.numeroVol = numeroVol; }
+    
+    public LocalDate getDateVol() { return dateVol; }
+    public void setDateVol(LocalDate dateVol) { this.dateVol = dateVol; }
+    
+    public LocalTime getHeureDepart() { return heureDepart; }
+    public void setHeureDepart(LocalTime heureDepart) { this.heureDepart = heureDepart; }
+    
+    public LocalTime getHeureArrivee() { return heureArrivee; }
+    public void setHeureArrivee(LocalTime heureArrivee) { this.heureArrivee = heureArrivee; }
+    
+    public double getPrix() { return prix; }
+    public void setPrix(double prix) { this.prix = prix; }
+    
+    public String getDepartIata() { return departIata; }
+    public void setDepartIata(String departIata) { this.departIata = departIata; }
+    
+    public String getArriveeIata() { return arriveeIata; }
+    public void setArriveeIata(String arriveeIata) { this.arriveeIata = arriveeIata; }
+    
+    public Long getAvionId() { return avionId; }
+    public void setAvionId(Long avionId) { this.avionId = avionId; }
+    
+    public Aeroport getDepart() { return depart; }
+    public void setDepart(Aeroport depart) { this.depart = depart; }
+    
+    public Aeroport getArrivee() { return arrivee; }
+    public void setArrivee(Aeroport arrivee) { this.arrivee = arrivee; }
+    
+    public Avion getAvion() { return avion; }
+    public void setAvion(Avion avion) { this.avion = avion; }
+}
+
+========================================================================
+=== Fichier Java: src/main/java/repository/AeroportRepository.java
+========================================================================
+
+package repository;
+public class AeroportRepository
+{
+
+}
+
+========================================================================
+=== Fichier Java: src/main/java/repository/ReservationRepository.java
+========================================================================
+
+package repository;
+public class ReservationRepository {
+    
+}
+
+========================================================================
+=== Fichier Java: src/main/java/repository/VolRepository.java
+========================================================================
+
+package repository;
+public class VolRepository {
+    
+}
+
+========================================================================
+=== Fichier Java: src/main/java/service/PaiementService.java
+========================================================================
+
+package service;
+public class PaiementService {
+    
+}
+
+========================================================================
+=== Fichier Java: src/main/java/service/ReservationService.java
+========================================================================
+
+package service;
+public class ReservationService {
+    
+}
+
+========================================================================
+=== Fichier Java: src/main/java/service/VolService.java
+========================================================================
+
+package service;
+public class VolService {
+    
+}
+
+========================================================================
+=== Fichier SQL: src/CONFIG BD/data.sql
+========================================================================
+
+ 
+-- =========================
+-- AEROPORTS
+-- =========================
+INSERT INTO aeroport (code_iata, nom, ville, pays) VALUES
+('TNR', 'Ivato', 'Antananarivo', 'Madagascar'),
+('CDG', 'Charles de Gaulle', 'Paris', 'France'),
+('JFK', 'John F. Kennedy', 'New York', 'USA'),
+('LHR', 'Heathrow', 'London', 'UK');
+
+-- =========================
+-- AVIONS
+-- =========================
+INSERT INTO avion (modele, capacite, etat) VALUES
+('Airbus A320', 180, 'DISPONIBLE'),
+('Boeing 737', 160, 'DISPONIBLE'),
+('Embraer E195', 120, 'MAINTENANCE');
+
+-- =========================
+-- VOLS
+-- =========================
+INSERT INTO vol (numero_vol, date_vol, heure_depart, heure_arrivee, prix, depart_iata, arrivee_iata, avion_id) VALUES
+('MK101', '2026-01-15', '08:00', '16:00', 450.00, 'TNR', 'CDG', 1),
+('MK102', '2026-01-16', '10:00', '18:00', 470.00, 'TNR', 'CDG', 2),
+('MK201', '2026-01-15', '12:00', '16:00', 300.00, 'CDG', 'JFK', 1),
+('MK301', '2026-01-17', '14:00', '22:00', 500.00, 'TNR', 'JFK', 2);
+
+-- =========================
+-- PASSAGERS
+-- =========================
+INSERT INTO passager (nom, prenom, date_naissance, numero_document, nationalite, email, telephone) VALUES
+('Andrianirina', 'Liana', '1998-06-10', 'P1234567', 'Madagascar', 'liana@gmail.com', '+261330000001'),
+('Rakoto', 'Hery', '1995-09-20', 'P2345678', 'Madagascar', 'hery@gmail.com', '+261330000002'),
+('Rabe', 'Naina', '2000-03-15', 'P3456789', 'Madagascar', 'naina@gmail.com', '+261330000003');
+
+-- =========================
+-- RESERVATIONS
+-- =========================
+INSERT INTO reservation (date_reservation, statut, vol_id, passager_id) VALUES
+('2026-01-01 09:00:00', 'EN_COURS', 1, 1),
+('2026-01-02 10:30:00', 'PAYEE', 2, 2),
+('2026-01-03 14:45:00', 'EN_COURS', 3, 3);
+
+-- =========================
+-- OPTIONS SUPPLEMENTAIRES
+-- =========================
+INSERT INTO option_supplementaire (type_option, description, prix, reservation_id) VALUES
+('BAGAGE', '+1 bagage 23kg', 30.00, 1),
+('REPAS', 'Repas végétarien', 10.00, 1),
+('ASSURANCE', 'Assurance voyage', 20.00, 2),
+('PRIORITE', 'Embarquement prioritaire', 15.00, 3);
+
+========================================================================
+=== Fichier SQL: src/CONFIG BD/schema.sql
+========================================================================
+
+
+
+-- =========================
+-- TABLE AEROPORT
+-- =========================
+CREATE TABLE aeroport (
+    code_iata VARCHAR(3) PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    ville VARCHAR(100) NOT NULL,
+    pays VARCHAR(100) NOT NULL
+);
+
+-- =========================
+-- TABLE AVION
+-- =========================
+CREATE TABLE avion (
+    id BIGSERIAL PRIMARY KEY,
+    modele VARCHAR(100) NOT NULL,
+    capacite INT NOT NULL,
+    etat VARCHAR(30) NOT NULL
+);
+
+-- =========================
+-- TABLE VOL
+-- =========================
+CREATE TABLE vol (
+    id BIGSERIAL PRIMARY KEY,
+    numero_vol VARCHAR(20) NOT NULL,
+    date_vol DATE NOT NULL,
+    heure_depart TIME NOT NULL,
+    heure_arrivee TIME NOT NULL,
+    prix DECIMAL(10,2) NOT NULL,
+
+    depart_iata VARCHAR(3) NOT NULL,
+    arrivee_iata VARCHAR(3) NOT NULL,
+    avion_id BIGINT NOT NULL,
+
+    CONSTRAINT fk_vol_depart
+        FOREIGN KEY (depart_iata)
+        REFERENCES aeroport(code_iata),
+
+    CONSTRAINT fk_vol_arrivee
+        FOREIGN KEY (arrivee_iata)
+        REFERENCES aeroport(code_iata),
+
+    CONSTRAINT fk_vol_avion
+        FOREIGN KEY (avion_id)
+        REFERENCES avion(id)
+);
+
+-- =========================
+-- TABLE PASSAGER
+-- =========================
+CREATE TABLE passager (
+    id BIGSERIAL PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    date_naissance DATE NOT NULL,
+    numero_document VARCHAR(50) NOT NULL,
+    nationalite VARCHAR(50),
+    email VARCHAR(100),
+    telephone VARCHAR(30)
+);
+
+-- =========================
+-- TABLE RESERVATION
+-- =========================
+CREATE TABLE reservation (
+    id BIGSERIAL PRIMARY KEY,
+    date_reservation TIMESTAMP NOT NULL,
+    statut VARCHAR(30) NOT NULL,
+
+    vol_id BIGINT NOT NULL,
+    passager_id BIGINT NOT NULL,
+
+    CONSTRAINT fk_reservation_vol
+        FOREIGN KEY (vol_id)
+        REFERENCES vol(id),
+
+    CONSTRAINT fk_reservation_passager
+        FOREIGN KEY (passager_id)
+        REFERENCES passager(id)
+);
+

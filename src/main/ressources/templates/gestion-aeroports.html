@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Aéroports - Administration ITU Airlines</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        .aeroport-card {
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .aeroport-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .aeroport-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        .code-iata {
+            background: #0d6efd;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .stat-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+        .map-preview {
+            width: 100%;
+            height: 100px;
+            background: #e9ecef;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            margin-top: 15px;
+        }
+        .filters-bar {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .continent-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/admin">
+                <i class="bi bi-arrow-left"></i> Administration ITU Airlines
+            </a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="/admin">Tableau de bord</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-geo-alt"></i> Gestion des aéroports</h2>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ajouterAeroportModal">
+                <i class="bi bi-plus-circle"></i> Ajouter un aéroport
+            </button>
+        </div>
+
+        <!-- Filtres -->
+        <div class="filters-bar">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Code IATA</label>
+                    <input type="text" class="form-control" placeholder="Ex: CDG">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Pays</label>
+                    <select class="form-select">
+                        <option>Tous les pays</option>
+                        <option>Madagascar</option>
+                        <option>France</option>
+                        <option>États-Unis</option>
+                        <option>Royaume-Uni</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Continent</label>
+                    <select class="form-select">
+                        <option>Tous les continents</option>
+                        <option>Afrique</option>
+                        <option>Europe</option>
+                        <option>Amérique</option>
+                        <option>Asie</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary">Rechercher</button>
+                    <button class="btn btn-outline-secondary">Réinitialiser</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des aéroports -->
+        <div class="row">
+            <!-- Aéroport TNR -->
+            <div class="col-lg-4 col-md-6">
+                <div class="aeroport-card">
+                    <div class="aeroport-header">
+                        <div>
+                            <h4>Aéroport d'Ivato</h4>
+                            <p class="text-muted mb-0">Antananarivo, Madagascar</p>
+                        </div>
+                        <div class="code-iata">TNR</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="continent-badge bg-primary">Afrique</span>
+                        <span class="continent-badge bg-info">Hub principal</span>
+                    </div>
+                    
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <small class="text-muted">Fuseau horaire</small>
+                            <p class="mb-0">GMT+3</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Altitude</small>
+                            <p class="mb-0">1,280m</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Pistes</small>
+                            <p class="mb-0">2</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Terminaux</small>
+                            <p class="mb-0">1</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">42</div>
+                            <div class="stat-label">Vols/sem</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">15</div>
+                            <div class="stat-label">Destinations</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Compagnies</div>
+                        </div>
+                    </div>
+                    
+                    <div class="map-preview">
+                        <i class="bi bi-geo"></i> 18°47′S 47°29′E
+                    </div>
+                    
+                    <div class="mt-3 d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm flex-fill" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#modifierAeroportModal">
+                            <i class="bi bi-pencil"></i> Modifier
+                        </button>
+                        <button class="btn btn-outline-info btn-sm flex-fill" onclick="voirStatistiques('TNR')">
+                            <i class="bi bi-graph-up"></i> Stats
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm flex-fill" onclick="supprimerAeroport('TNR')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aéroport CDG -->
+            <div class="col-lg-4 col-md-6">
+                <div class="aeroport-card">
+                    <div class="aeroport-header">
+                        <div>
+                            <h4>Charles de Gaulle</h4>
+                            <p class="text-muted mb-0">Paris, France</p>
+                        </div>
+                        <div class="code-iata">CDG</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="continent-badge bg-success">Europe</span>
+                        <span class="continent-badge bg-warning">International</span>
+                    </div>
+                    
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <small class="text-muted">Fuseau horaire</small>
+                            <p class="mb-0">GMT+1</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Altitude</small>
+                            <p class="mb-0">119m</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Pistes</small>
+                            <p class="mb-0">4</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Terminaux</small>
+                            <p class="mb-0">3</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">28</div>
+                            <div class="stat-label">Vols/sem</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Destinations</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Compagnies</div>
+                        </div>
+                    </div>
+                    
+                    <div class="map-preview">
+                        <i class="bi bi-geo"></i> 49°00′N 2°33′E
+                    </div>
+                    
+                    <div class="mt-3 d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm flex-fill">
+                            <i class="bi bi-pencil"></i> Modifier
+                        </button>
+                        <button class="btn btn-outline-info btn-sm flex-fill" onclick="voirStatistiques('CDG')">
+                            <i class="bi bi-graph-up"></i> Stats
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm flex-fill" onclick="supprimerAeroport('CDG')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aéroport JFK -->
+            <div class="col-lg-4 col-md-6">
+                <div class="aeroport-card">
+                    <div class="aeroport-header">
+                        <div>
+                            <h4>John F. Kennedy</h4>
+                            <p class="text-muted mb-0">New York, USA</p>
+                        </div>
+                        <div class="code-iata">JFK</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="continent-badge bg-danger">Amérique</span>
+                        <span class="continent-badge bg-warning">International</span>
+                    </div>
+                    
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <small class="text-muted">Fuseau horaire</small>
+                            <p class="mb-0">GMT-5</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Altitude</small>
+                            <p class="mb-0">4m</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Pistes</small>
+                            <p class="mb-0">4</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Terminaux</small>
+                            <p class="mb-0">6</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">21</div>
+                            <div class="stat-label">Vols/sem</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Destinations</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Compagnies</div>
+                        </div>
+                    </div>
+                    
+                    <div class="map-preview">
+                        <i class="bi bi-geo"></i> 40°38′N 73°47′W
+                    </div>
+                    
+                    <div class="mt-3 d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm flex-fill">
+                            <i class="bi bi-pencil"></i> Modifier
+                        </button>
+                        <button class="btn btn-outline-info btn-sm flex-fill" onclick="voirStatistiques('JFK')">
+                            <i class="bi bi-graph-up"></i> Stats
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm flex-fill" onclick="supprimerAeroport('JFK')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques globales -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Statistiques des aéroports</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <div class="display-4 text-primary">15</div>
+                        <div class="text-muted">Aéroports total</div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="display-4 text-success">4</div>
+                        <div class="text-muted">Continents</div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="display-4 text-warning">12</div>
+                        <div class="text-muted">Pays</div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="display-4 text-info">85</div>
+                        <div class="text-muted">Destinations total</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajouter Aéroport -->
+    <div class="modal fade" id="ajouterAeroportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajouter un nouvel aéroport</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAjouterAeroport">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Code IATA *</label>
+                                <input type="text" class="form-control" maxlength="3" required>
+                                <small class="text-muted">3 lettres majuscules</small>
+                            </div>
+                            <div class="col-md-9">
+                                <label class="form-label">Nom *</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Ville *</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Pays *</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Continent *</label>
+                                <select class="form-select" required>
+                                    <option value="">Sélectionner...</option>
+                                    <option value="AFRIQUE">Afrique</option>
+                                    <option value="EUROPE">Europe</option>
+                                    <option value="AMERIQUE">Amérique</option>
+                                    <option value="ASIE">Asie</option>
+                                    <option value="OCEANIE">Océanie</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Fuseau horaire</label>
+                                <select class="form-select">
+                                    <option value="GMT">GMT</option>
+                                    <option value="GMT+1">GMT+1</option>
+                                    <option value="GMT+2">GMT+2</option>
+                                    <option value="GMT+3">GMT+3</option>
+                                    <option value="GMT-5">GMT-5</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Latitude</label>
+                                <input type="text" class="form-control" placeholder="Ex: 18.7965">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Longitude</label>
+                                <input type="text" class="form-control" placeholder="Ex: 47.4788">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Altitude (m)</label>
+                                <input type="number" class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Nombre de pistes</label>
+                                <input type="number" class="form-control" min="1">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Nombre de terminaux</label>
+                                <input type="number" class="form-control" min="1">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Type</label>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="typeHub">
+                                        <label class="form-check-label" for="typeHub">Hub principal</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="typeInternational">
+                                        <label class="form-check-label" for="typeInternational">International</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="typeDomestique">
+                                        <label class="form-check-label" for="typeDomestique">Domestique</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="typeCargo">
+                                        <label class="form-check-label" for="typeCargo">Cargo</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Équipements</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox">
+                                            <label class="form-check-label">Wi-Fi gratuit</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox">
+                                            <label class="form-check-label">Salles VIP</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox">
+                                            <label class="form-check-label">Douanes 24h/24</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox">
+                                            <label class="form-check-label">Hôtel sur place</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox">
+                                            <label class="form-check-label">Location voiture</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox">
+                                            <label class="form-check-label">Transport public</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" rows="3" placeholder="Informations supplémentaires..."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="ajouterAeroport()">Ajouter l'aéroport</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Modifier Aéroport -->
+    <div class="modal fade" id="modifierAeroportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifier l'aéroport TNR</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formModifierAeroport">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Code IATA</label>
+                                <input type="text" class="form-control" value="TNR" readonly>
+                            </div>
+                            <div class="col-md-9">
+                                <label class="form-label">Nom</label>
+                                <input type="text" class="form-control" value="Aéroport d'Ivato">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Ville</label>
+                                <input type="text" class="form-control" value="Antananarivo">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Pays</label>
+                                <input type="text" class="form-control" value="Madagascar">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Continent</label>
+                                <select class="form-select">
+                                    <option value="AFRIQUE" selected>Afrique</option>
+                                    <option value="EUROPE">Europe</option>
+                                    <option value="AMERIQUE">Amérique</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Fuseau horaire</label>
+                                <select class="form-select">
+                                    <option value="GMT+3" selected>GMT+3</option>
+                                    <option value="GMT+1">GMT+1</option>
+                                    <option value="GMT">GMT</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Vols par semaine</label>
+                                <input type="number" class="form-control" value="42">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Compagnies aériennes</label>
+                                <input type="number" class="form-control" value="3">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Taux d'occupation</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" value="78">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Statut</label>
+                                <select class="form-select">
+                                    <option value="ACTIF" selected>Actif</option>
+                                    <option value="MAINTENANCE">Maintenance</option>
+                                    <option value="FERME">Fermé temporairement</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Notes</label>
+                                <textarea class="form-control" rows="3">Hub principal de la compagnie. Capacité d'extension prévue en 2027.</textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="modifierAeroport()">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Voir les statistiques d'un aéroport
+        function voirStatistiques(codeIata) {
+            alert('Ouverture des statistiques pour ' + codeIata);
+            // window.location.href = '/admin/aeroports/' + codeIata + '/statistiques';
+        }
+
+        // Supprimer un aéroport
+        function supprimerAeroport(codeIata) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer l\'aéroport ' + codeIata + ' ?')) {
+                alert('Aéroport ' + codeIata + ' supprimé (simulation)');
+                // Ici, appel API pour supprimer
+            }
+        }
+
+        // Ajouter un aéroport
+        function ajouterAeroport() {
+            const form = document.getElementById('formAjouterAeroport');
+            if (form.checkValidity()) {
+                const codeIata = form.querySelector('input[type="text"]').value;
+                alert('Aéroport ' + codeIata + ' ajouté avec succès !');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('ajouterAeroportModal'));
+                modal.hide();
+            } else {
+                form.reportValidity();
+            }
+        }
+
+        // Modifier un aéroport
+        function modifierAeroport() {
+            const form = document.getElementById('formModifierAeroport');
+            if (form.checkValidity()) {
+                alert('Aéroport modifié avec succès !');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modifierAeroportModal'));
+                modal.hide();
+            } else {
+                form.reportValidity();
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Validation du code IATA
+            const codeIataInput = document.querySelector('input[maxlength="3"]');
+            if (codeIataInput) {
+                codeIataInput.addEventListener('input', function() {
+                    this.value = this.value.toUpperCase();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

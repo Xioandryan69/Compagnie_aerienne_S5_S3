@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation - ITU Airlines</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        .confirmation-header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 40px 0;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 40px;
+        }
+        .billet-electronique {
+            border: 2px dashed #28a745;
+            border-radius: 15px;
+            padding: 25px;
+            background: #f8fff9;
+            position: relative;
+            overflow: hidden;
+        }
+        .billet-header {
+            background: #28a745;
+            color: white;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            margin: -25px -25px 25px -25px;
+        }
+        .billet-qrcode {
+            width: 150px;
+            height: 150px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            margin: 0 auto;
+        }
+        .segment-ligne {
+            border-left: 3px solid #28a745;
+            padding-left: 15px;
+            margin-left: 10px;
+        }
+        .action-buttons .btn {
+            margin: 5px;
+            min-width: 200px;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: gold;
+            border-radius: 50%;
+            animation: fall 5s linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+        }
+        .timeline-confirmation {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline-confirmation::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #28a745;
+        }
+        .timeline-step {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        .timeline-step::before {
+            content: '';
+            position: absolute;
+            left: -36px;
+            top: 0;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #28a745;
+        }
+        .timeline-step.completed::before {
+            background: #28a745;
+        }
+        .important-info {
+            border-left: 4px solid #ffc107;
+            padding-left: 15px;
+            background: #fff9e6;
+        }
+    </style>
+</head>
+<body>
+    <!-- En-tête de confirmation -->
+    <div class="confirmation-header">
+        <div class="container text-center">
+            <h1 class="display-4 mb-3">
+                <i class="bi bi-check-circle-fill"></i> Réservation confirmée !
+            </h1>
+            <p class="lead">Votre billet électronique vous a été envoyé par email</p>
+            <div class="alert alert-light d-inline-block" role="alert">
+                <h4 class="alert-heading mb-2">
+                    <i class="bi bi-ticket-detailed"></i> 
+                    N° de réservation: <strong th:text="${reservation.id}">RES-2026-001234</strong>
+                </h4>
+                <p class="mb-0">Conservez ce numéro pour toute référence</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <div class="row">
+            <!-- Billet électronique -->
+            <div class="col-lg-8">
+                <div class="billet-electronique shadow-lg mb-5" id="billetImprimable">
+                    <div class="billet-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="mb-0">ITU AIRLINES</h3>
+                                <small>Billet Électronique</small>
+                            </div>
+                            <div class="text-end">
+                                <h4 class="mb-0" th:text="${reservation.id}">RES-2026-001234</h4>
+                                <small>Date: <span th:text="${#temporals.format(reservation.dateReservation, 'dd/MM/yyyy HH:mm')}">01/01/2026 14:30</span></small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- QR Code -->
+                        <div class="col-md-3 text-center">
+                            <div class="billet-qrcode mb-3">
+                                <i class="bi bi-qr-code" style="font-size: 4em; color: #666;"></i>
+                            </div>
+                            <small class="text-muted">Scanner à l'embarquement</small>
+                        </div>
+                        
+                        <!-- Détails du vol -->
+                        <div class="col-md-9">
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h5>Détails du vol</h5>
+                                    <p class="mb-1">
+                                        <strong th:text="${reservation.vol != null ? reservation.vol.numeroVol : 'MK101'}">MK101</strong>
+                                    </p>
+                                    <p class="mb-1">
+                                        <span th:text="${reservation.vol != null ? reservation.vol.departIata : 'TNR'}">TNR</span> → 
+                                        <span th:text="${reservation.vol != null ? reservation.vol.arriveeIata : 'CDG'}">CDG</span>
+                                    </p>
+                                    <p class="mb-0">
+                                        <span th:text="${reservation.vol != null ? #temporals.format(reservation.vol.dateVol, 'dd/MM/yyyy') : '15/01/2026'}">15/01/2026</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Passager</h5>
+                                    <p class="mb-1">
+                                        <strong>Jean Dupont</strong>
+                                    </p>
+                                    <p class="mb-1">Siège: 13A</p>
+                                    <p class="mb-0">Classe: Économique</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Timeline du vol -->
+                            <div class="timeline-confirmation">
+                                <div class="timeline-step completed">
+                                    <h6>Départ • TNR - Ivato</h6>
+                                    <p class="mb-1">
+                                        <strong th:text="${reservation.vol != null ? #temporals.format(reservation.vol.heureDepart, 'HH:mm') : '08:00'}">08:00</strong>
+                                        • Terminal 1 • Porte 12
+                                    </p>
+                                    <small class="text-muted">
+                                        Enregistrement ouvert: 06:00 • Fermeture: 07:30
+                                    </small>
+                                </div>
+                                
+                                <div class="timeline-step">
+                                    <h6>Arrivée • CDG - Charles de Gaulle</h6>
+                                    <p class="mb-1">
+                                        <strong th:text="${reservation.vol != null ? #temporals.format(reservation.vol.heureArrivee, 'HH:mm') : '16:00'}">16:00</strong>
+                                        • Terminal 2C • Porte 45
+                                    </p>
+                                    <small class="text-muted">
+                                        Heure locale • Durée: 8h00
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <!-- Bagages -->
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <h6>Bagages</h6>
+                                    <ul class="mb-0">
+                                        <li>Cabine: 1 × 7kg</li>
+                                        <li>Soute: 1 × 23kg</li>
+                                        <li>Supplément: 1 × 23kg</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Options</h6>
+                                    <ul class="mb-0">
+                                        <li>Repas végétarien</li>
+                                        <li>Assurance voyage</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Conditions -->
+                    <div class="mt-4 pt-4 border-top">
+                        <small class="text-muted">
+                            <strong>Conditions:</strong> Présentez ce billet et une pièce d'identité à l'enregistrement. 
+                            L'enregistrement en ligne est disponible 24h avant le départ. Bagages en soute à déposer 
+                            au plus tard 1h avant le départ.
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- Prochaines étapes -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-list-check"></i> Prochaines étapes</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 text-center mb-3">
+                                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                     style="width: 80px; height: 80px;">
+                                    <i class="bi bi-envelope text-primary" style="font-size: 2em;"></i>
+                                </div>
+                                <h6 class="mt-2">1. Vérifiez vos emails</h6>
+                                <small class="text-muted">Le billet électronique vous a été envoyé</small>
+                            </div>
+                            <div class="col-md-4 text-center mb-3">
+                                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                     style="width: 80px; height: 80px;">
+                                    <i class="bi bi-check-square text-primary" style="font-size: 2em;"></i>
+                                </div>
+                                <h6 class="mt-2">2. Enregistrement en ligne</h6>
+                                <small class="text-muted">Disponible 24h avant le vol</small>
+                            </div>
+                            <div class="col-md-4 text-center mb-3">
+                                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                     style="width: 80px; height: 80px;">
+                                    <i class="bi bi-airplane text-primary" style="font-size: 2em;"></i>
+                                </div>
+                                <h6 class="mt-2">3. Présentez-vous</h6>
+                                <small class="text-muted">2h avant le départ avec pièce d'identité</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Actions et informations -->
+            <div class="col-lg-4">
+                <!-- Actions -->
+                <div class="card shadow-lg mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-gear"></i> Actions</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="action-buttons">
+                            <button class="btn btn-success w-100 mb-2" onclick="imprimerBillet()">
+                                <i class="bi bi-printer"></i> Télécharger le billet
+                            </button>
+                            <button class="btn btn-primary w-100 mb-2" onclick="envoyerEmail()">
+                                <i class="bi bi-envelope"></i> Envoyer par email
+                            </button>
+                            <button class="btn btn-outline-primary w-100 mb-2" onclick="ajouterCalendrier()">
+                                <i class="bi bi-calendar-plus"></i> Ajouter au calendrier
+                            </button>
+                            <a href="/compte" class="btn btn-outline-success w-100 mb-2">
+                                <i class="bi bi-person-circle"></i> Voir dans mon compte
+                            </a>
+                            <a href="/" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-house"></i> Retour à l'accueil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Informations importantes -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Informations importantes</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="important-info mb-3">
+                            <h6>Pièces d'identité</h6>
+                            <p class="mb-0">
+                                Passeport valide 6 mois minimum.<br>
+                                Visa requis pour certaines destinations.
+                            </p>
+                        </div>
+                        
+                        <div class="important-info mb-3">
+                            <h6>Horaires d'enregistrement</h6>
+                            <p class="mb-0">
+                                Ouverture: 2h avant le vol.<br>
+                                Fermeture: 40min avant le vol.
+                            </p>
+                        </div>
+                        
+                        <div class="important-info">
+                            <h6>Bagages</h6>
+                            <p class="mb-0">
+                                Poids maximum: 23kg par bagage.<br>
+                                Dimensions max: 158cm (L+l+H).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Assistance -->
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5><i class="bi bi-headset"></i> Besoin d'aide ?</h5>
+                        <p class="mb-2">Notre équipe est à votre disposition</p>
+                        <p class="mb-2">
+                            <i class="bi bi-telephone"></i> +261 20 22 222 22<br>
+                            <i class="bi bi-envelope"></i> assistance@itu-airlines.mg
+                        </p>
+                        <small class="text-muted">Lundi au dimanche, 24h/24</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Évaluation -->
+        <div class="card mt-5">
+            <div class="card-body text-center">
+                <h5>Comment s'est passée votre réservation ?</h5>
+                <p class="text-muted mb-3">Partagez votre expérience avec nous</p>
+                <div class="d-flex justify-content-center gap-2 mb-3">
+                    <i class="bi bi-star" style="font-size: 1.5em; cursor: pointer;" 
+                       onmouseover="hoverStar(this, 1)" onclick="rateExperience(1)"></i>
+                    <i class="bi bi-star" style="font-size: 1.5em; cursor: pointer;" 
+                       onmouseover="hoverStar(this, 2)" onclick="rateExperience(2)"></i>
+                    <i class="bi bi-star" style="font-size: 1.5em; cursor: pointer;" 
+                       onmouseover="hoverStar(this, 3)" onclick="rateExperience(3)"></i>
+                    <i class="bi bi-star" style="font-size: 1.5em; cursor: pointer;" 
+                       onmouseover="hoverStar(this, 4)" onclick="rateExperience(4)"></i>
+                    <i class="bi bi-star" style="font-size: 1.5em; cursor: pointer;" 
+                       onmouseover="hoverStar(this, 5)" onclick="rateExperience(5)"></i>
+                </div>
+                <button class="btn btn-outline-primary btn-sm" onclick="showFeedbackForm()">
+                    Donner mon avis détaillé
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal feedback -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Votre avis nous intéresse</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="feedbackForm">
+                        <div class="mb-3">
+                            <label class="form-label">Commentaires</label>
+                            <textarea class="form-control" rows="4" 
+                                      placeholder="Partagez votre expérience..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Recommanderiez-vous ITU Airlines ?</label>
+                            <select class="form-select">
+                                <option value="">Choisir...</option>
+                                <option value="yes">Oui, certainement</option>
+                                <option value="maybe">Peut-être</option>
+                                <option value="no">Probablement pas</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-primary" onclick="submitFeedback()">Envoyer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Confetti animation
+        function creerConfetti() {
+            const container = document.querySelector('.confirmation-header');
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDelay = Math.random() * 5 + 's';
+                confetti.style.backgroundColor = 
+                    ['#28a745', '#20c997', '#ffc107', '#fd7e14', '#0d6efd'][Math.floor(Math.random() * 5)];
+                container.appendChild(confetti);
+                
+                // Supprimer après l'animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+        
+        // Imprimer le billet
+        function imprimerBillet() {
+            const billet = document.getElementById('billetImprimable');
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Billet Électronique - ITU Airlines</title>
+                        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+                        <style>
+                            @media print {
+                                body { padding: 20px; }
+                                .no-print { display: none !important; }
+                            }
+                            .billet-print {
+                                border: 2px solid #000;
+                                padding: 20px;
+                                font-family: Arial, sans-serif;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        ${billet.innerHTML}
+                        <div class="text-center mt-4 no-print">
+                            <button onclick="window.print()" class="btn btn-primary">Imprimer</button>
+                            <button onclick="window.close()" class="btn btn-secondary">Fermer</button>
+                        </div>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            
+            // Simuler le téléchargement
+            setTimeout(() => {
+                alert('Billet téléchargé avec succès !');
+            }, 1000);
+        }
+        
+        // Envoyer par email
+        function envoyerEmail() {
+            const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+            const modalInstance = document.getElementById('feedbackModal');
+            
+            // Modifier le modal pour l'envoi d'email
+            modalInstance.querySelector('.modal-title').textContent = 'Envoyer par email';
+            modalInstance.querySelector('.modal-body').innerHTML = `
+                <form id="emailForm">
+                    <div class="mb-3">
+                        <label class="form-label">Adresse email</label>
+                        <input type="email" class="form-control" placeholder="votre@email.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message (optionnel)</label>
+                        <textarea class="form-control" rows="3" placeholder="Ajouter un message..."></textarea>
+                    </div>
+                </form>
+            `;
+            modalInstance.querySelector('.modal-footer').innerHTML = `
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="sendEmail()">Envoyer</button>
+            `;
+            
+            modal.show();
+        }
+        
+        // Envoyer l'email
+        function sendEmail() {
+            const email = document.querySelector('#emailForm input[type="email"]').value;
+            
+            if (!email) {
+                alert('Veuillez entrer une adresse email.');
+                return;
+            }
+            
+            // Simuler l'envoi
+            setTimeout(() => {
+                alert(`Billet envoyé à ${email} avec succès !`);
+                bootstrap.Modal.getInstance(document.getElementById('feedbackModal')).hide();
+            }, 1500);
+        }
+        
+        // Ajouter au calendrier
+        function ajouterCalendrier() {
+            const options = [
+                'Google Calendar',
+                'Apple Calendar', 
+                'Outlook',
+                'Télécharger .ics'
+            ];
+            
+            let html = '<p>Sélectionnez votre calendrier :</p>';
+            options.forEach(option => {
+                html += `
+                    <button class="btn btn-outline-primary d-block w-100 mb-2" 
+                            onclick="addToCalendar('${option}')">
+                        ${option}
+                    </button>
+                `;
+            });
+            
+            const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+            const modalInstance = document.getElementById('feedbackModal');
+            
+            modalInstance.querySelector('.modal-title').textContent = 'Ajouter au calendrier';
+            modalInstance.querySelector('.modal-body').innerHTML = html;
+            modalInstance.querySelector('.modal-footer').innerHTML = `
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            `;
+            
+            modal.show();
+        }
+        
+        function addToCalendar(service) {
+            alert(`Ajouté à ${service} !`);
+            bootstrap.Modal.getInstance(document.getElementById('feedbackModal')).hide();
+        }
+        
+        // Évaluation
+        let rating = 0;
+        
+        function hoverStar(star, value) {
+            const stars = document.querySelectorAll('.bi-star');
+            stars.forEach((s, index) => {
+                if (index < value) {
+                    s.className = 'bi bi-star-fill text-warning';
+                } else {
+                    s.className = 'bi bi-star';
+                }
+            });
+        }
+        
+        function rateExperience(value) {
+            rating = value;
+            const stars = document.querySelectorAll('.bi-star, .bi-star-fill');
+            stars.forEach((s, index) => {
+                if (index < value) {
+                    s.className = 'bi bi-star-fill text-warning';
+                } else {
+                    s.className = 'bi bi-star';
+                }
+            });
+            
+            setTimeout(() => {
+                alert(`Merci pour votre note de ${value} étoiles !`);
+            }, 300);
+        }
+        
+        function showFeedbackForm() {
+            const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+            const modalInstance = document.getElementById('feedbackModal');
+            
+            // Réinitialiser le modal
+            modalInstance.querySelector('.modal-title').textContent = 'Votre avis nous intéresse';
+            modalInstance.querySelector('.modal-body').innerHTML = `
+                <form id="feedbackForm">
+                    <div class="mb-3">
+                        <label class="form-label">Commentaires</label>
+                        <textarea class="form-control" rows="4" placeholder="Partagez votre expérience..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Recommanderiez-vous ITU Airlines ?</label>
+                        <select class="form-select">
+                            <option value="">Choisir...</option>
+                            <option value="yes">Oui, certainement</option>
+                            <option value="maybe">Peut-être</option>
+                            <option value="no">Probablement pas</option>
+                        </select>
+                    </div>
+                </form>
+            `;
+            modalInstance.querySelector('.modal-footer').innerHTML = `
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-primary" onclick="submitFeedback()">Envoyer</button>
+            `;
+            
+            modal.show();
+        }
+        
+        function submitFeedback() {
+            alert('Merci pour votre feedback !');
+            bootstrap.Modal.getInstance(document.getElementById('feedbackModal')).hide();
+        }
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Créer le confetti
+            creerConfetti();
+            
+            // Sauvegarder la réservation dans le localStorage
+            localStorage.setItem('derniereReservation', JSON.stringify({
+                id: 'RES-2026-001234',
+                date: new Date().toISOString(),
+                montant: '500.00'
+            }));
+            
+            // Nettoyer les données temporaires
+            ['siegeSelectionne', 'supplementSiege', 'totalOptions', 'totalGeneral'].forEach(key => {
+                localStorage.removeItem(key);
+            });
+        });
+    </script>
+</body>
+</html>
