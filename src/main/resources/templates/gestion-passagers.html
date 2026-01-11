@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Passagers - Administration ITU Airlines</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        .passager-card {
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .passager-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .passager-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #0d6efd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+        .fidelite-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .stat-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+        .search-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .reservation-item {
+            padding: 10px;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        .voyage-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        .voyage-item:last-child {
+            border-bottom: none;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+        .badge-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/admin">
+                <i class="bi bi-arrow-left"></i> Administration ITU Airlines
+            </a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="/admin">Tableau de bord</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-people"></i> Gestion des passagers</h2>
+            <div>
+                <button class="btn btn-outline-primary" onclick="exporterPassagers()">
+                    <i class="bi bi-download"></i> Exporter
+                </button>
+                <button class="btn btn-primary" onclick="envoyerMessageGlobal()">
+                    <i class="bi bi-envelope"></i> Envoyer message
+                </button>
+            </div>
+        </div>
+
+        <!-- Recherche -->
+        <div class="search-box">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Nom</label>
+                    <input type="text" class="form-control" placeholder="Rechercher par nom">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Numéro document</label>
+                    <input type="text" class="form-control" placeholder="Passeport/CIN">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Niveau fidélité</label>
+                    <select class="form-select">
+                        <option>Tous</option>
+                        <option value="STANDARD">Standard</option>
+                        <option value="SILVER">Silver</option>
+                        <option value="GOLD">Gold</option>
+                        <option value="PLATINUM">Platinum</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Statut</label>
+                    <select class="form-select">
+                        <option>Tous</option>
+                        <option value="ACTIF">Actif</option>
+                        <option value="INACTIF">Inactif</option>
+                        <option value="BLOQUE">Bloqué</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary">Rechercher</button>
+                    <button class="btn btn-outline-secondary">Réinitialiser</button>
+                    <a href="#" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#filtresAvancesModal">
+                        <i class="bi bi-funnel"></i> Filtres avancés
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des passagers -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Passager</th>
+                        <th>Contact</th>
+                        <th>Document</th>
+                        <th>Fidélité</th>
+                        <th>Vols</th>
+                        <th>Dernier vol</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr onclick="voirDetailPassager(1)" style="cursor: pointer;">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="passager-avatar">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                                <div>
+                                    <strong>Jean Dupont</strong><br>
+                                    <small class="text-muted">15/05/1990</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>jean.dupont@email.com</div>
+                            <small>+261 34 12 345 67</small>
+                        </td>
+                        <td>
+                            <div>Passeport</div>
+                            <small>12AB34567</small>
+                        </td>
+                        <td>
+                            <span class="fidelite-badge bg-warning text-dark">Gold</span><br>
+                            <small>1,250 points</small>
+                        </td>
+                        <td>
+                            <div class="text-center">
+                                <div class="stat-value">12</div>
+                                <small class="stat-label">vols</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div>15/12/2025</div>
+                            <small>TNR → CDG</small>
+                        </td>
+                        <td>
+                            <span class="badge-status bg-success">Actif</span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary" 
+                                        onclick="event.stopPropagation(); modifierPassager(1)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" 
+                                        onclick="event.stopPropagation(); voirReservations(1)">
+                                    <i class="bi bi-ticket"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" 
+                                        onclick="event.stopPropagation(); bloquerPassager(1)">
+                                    <i class="bi bi-person-x"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr onclick="voirDetailPassager(2)" style="cursor: pointer;">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="passager-avatar bg-success">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                                <div>
+                                    <strong>Marie Lambert</strong><br>
+                                    <small class="text-muted">22/08/1985</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>marie.lambert@email.com</div>
+                            <small>+261 33 98 765 43</small>
+                        </td>
+                        <td>
+                            <div>Carte d'identité</div>
+                            <small>30119852200885</small>
+                        </td>
+                        <td>
+                            <span class="fidelite-badge bg-secondary">Silver</span><br>
+                            <small>850 points</small>
+                        </td>
+                        <td>
+                            <div class="text-center">
+                                <div class="stat-value">8</div>
+                                <small class="stat-label">vols</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div>10/11/2025</div>
+                            <small>CDG → TNR</small>
+                        </td>
+                        <td>
+                            <span class="badge-status bg-success">Actif</span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-ticket"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr onclick="voirDetailPassager(3)" style="cursor: pointer;">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="passager-avatar bg-danger">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                                <div>
+                                    <strong>Paul Martin</strong><br>
+                                    <small class="text-muted">03/12/1978</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>paul.martin@email.com</div>
+                            <small>+261 32 11 223 34</small>
+                        </td>
+                        <td>
+                            <div>Passeport</div>
+                            <small>78CD90123</small>
+                        </td>
+                        <td>
+                            <span class="fidelite-badge bg-warning text-dark">Gold</span><br>
+                            <small>1,100 points</small>
+                        </td>
+                        <td>
+                            <div class="text-center">
+                                <div class="stat-value">15</div>
+                                <small class="stat-label">vols</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div>05/10/2025</div>
+                            <small>CDG → JFK</small>
+                        </td>
+                        <td>
+                            <span class="badge-status bg-warning">Inactif</span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" 
+                                        onclick="event.stopPropagation(); reactiverPassager(3)">
+                                    <i class="bi bi-person-check"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Navigation des passagers">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Précédent</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Statistiques -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <div class="display-4 text-primary">1,254</div>
+                        <div class="text-muted">Passagers total</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <div class="display-4 text-success">85%</div>
+                        <div class="text-muted">Taux d'activité</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <div class="display-4 text-warning">42</div>
+                        <div class="text-muted">Nouveaux ce mois</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <div class="display-4 text-info">€89,450</div>
+                        <div class="text-muted">Chiffre d'affaires</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Détail Passager -->
+    <div class="modal fade" id="detailPassagerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Détails du passager</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Onglets -->
+                    <ul class="nav nav-tabs" id="passagerTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info">
+                                Informations
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="reservations-tab" data-bs-toggle="tab" data-bs-target="#reservations">
+                                Réservations
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="historique-tab" data-bs-toggle="tab" data-bs-target="#historique">
+                                Historique des vols
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="fidelite-tab" data-bs-toggle="tab" data-bs-target="#fidelite">
+                                Fidélité
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Contenu des onglets -->
+                    <div class="tab-content p-3" id="passagerTabContent">
+                        <!-- Informations -->
+                        <div class="tab-pane fade show active" id="info">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Informations personnelles</h6>
+                                    <p><strong>Nom:</strong> Dupont</p>
+                                    <p><strong>Prénom:</strong> Jean</p>
+                                    <p><strong>Date de naissance:</strong> 15/05/1990</p>
+                                    <p><strong>Sexe:</strong> Masculin</p>
+                                    <p><strong>Nationalité:</strong> Française</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Contact</h6>
+                                    <p><strong>Email:</strong> jean.dupont@email.com</p>
+                                    <p><strong>Téléphone:</strong> +261 34 12 345 67</p>
+                                    <p><strong>Adresse:</strong> Lot IVC 67 Antananarivo</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Réservations -->
+                        <div class="tab-pane fade" id="reservations">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Référence</th>
+                                            <th>Vol</th>
+                                            <th>Date</th>
+                                            <th>Statut</th>
+                                            <th>Montant</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>RES-2026-001234</td>
+                                            <td>MK101</td>
+                                            <td>15/01/2026</td>
+                                            <td><span class="badge bg-success">Confirmé</span></td>
+                                            <td>€500.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td>RES-2025-009876</td>
+                                            <td>MK210</td>
+                                            <td>15/12/2025</td>
+                                            <td><span class="badge bg-secondary">Terminé</span></td>
+                                            <td>€450.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Historique -->
+                        <div class="tab-pane fade" id="historique">
+                            <div class="voyage-item">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <strong>TNR → CDG</strong>
+                                        <div>Vol MK210 • 15/12/2025</div>
+                                        <small class="text-muted">Siège 22C • Économique</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <div>8h00</div>
+                                        <span class="badge bg-secondary">Terminé</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="voyage-item">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <strong>CDG → TNR</strong>
+                                        <div>Vol MK105 • 10/11/2025</div>
+                                        <small class="text-muted">Siège 5A • Affaires</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <div>8h30</div>
+                                        <span class="badge bg-secondary">Terminé</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fidélité -->
+                        <div class="tab-pane fade" id="fidelite">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Statut fidélité</h6>
+                                    <p><strong>Niveau:</strong> <span class="badge bg-warning text-dark">Gold</span></p>
+                                    <p><strong>Points:</strong> 1,250</p>
+                                    <p><strong>Prochain niveau:</strong> 250 points</p>
+                                    <p><strong>Membre depuis:</strong> 15/06/2024</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Avantages</h6>
+                                    <ul>
+                                        <li>Bagage supplémentaire gratuit</li>
+                                        <li>Accès lounge</li>
+                                        <li>Embarquement prioritaire</li>
+                                        <li>Modification gratuite</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-primary" onclick="modifierPassagerDetail()">Modifier</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Filtres Avancés -->
+    <div class="modal fade" id="filtresAvancesModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Filtres avancés</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formFiltresAvances">
+                        <div class="mb-3">
+                            <label class="form-label">Date d'inscription</label>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <input type="date" class="form-control" placeholder="Du">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="date" class="form-control" placeholder="Au">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre minimum de vols</label>
+                            <input type="number" class="form-control" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Pays de résidence</label>
+                            <select class="form-select">
+                                <option value="">Tous les pays</option>
+                                <option>Madagascar</option>
+                                <option>France</option>
+                                <option>États-Unis</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Aéroport préféré</label>
+                            <select class="form-select">
+                                <option value="">Tous les aéroports</option>
+                                <option>TNR - Ivato</option>
+                                <option>CDG - Paris</option>
+                                <option>JFK - New York</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="appliquerFiltresAvances()">Appliquer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Voir le détail d'un passager
+        function voirDetailPassager(id) {
+            const modal = new bootstrap.Modal(document.getElementById('detailPassagerModal'));
+            modal.show();
+        }
+
+        // Modifier un passager
+        function modifierPassager(id) {
+            alert('Modification du passager ' + id + ' (simulation)');
+            // window.location.href = '/admin/passagers/' + id + '/modifier';
+        }
+
+        // Voir les réservations d'un passager
+        function voirReservations(id) {
+            alert('Ouverture des réservations du passager ' + id);
+            // window.location.href = '/admin/passagers/' + id + '/reservations';
+        }
+
+        // Bloquer un passager
+        function bloquerPassager(id) {
+            if (confirm('Êtes-vous sûr de vouloir bloquer ce passager ?')) {
+                alert('Passager ' + id + ' bloqué (simulation)');
+                // Ici, appel API pour bloquer
+            }
+        }
+
+        // Réactiver un passager
+        function reactiverPassager(id) {
+            if (confirm('Réactiver ce passager ?')) {
+                alert('Passager ' + id + ' réactivé (simulation)');
+                // Ici, appel API pour réactiver
+            }
+        }
+
+        // Modifier depuis le modal de détail
+        function modifierPassagerDetail() {
+            alert('Modification des informations du passager');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('detailPassagerModal'));
+            modal.hide();
+        }
+
+        // Exporter les passagers
+        function exporterPassagers() {
+            alert('Export des données des passagers (format CSV)');
+        }
+
+        // Envoyer un message global
+        function envoyerMessageGlobal() {
+            alert('Ouverture de l\'interface d\'envoi de message global');
+            // window.location.href = '/admin/messagerie';
+        }
+
+        // Appliquer les filtres avancés
+        function appliquerFiltresAvances() {
+            alert('Filtres avancés appliqués');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('filtresAvancesModal'));
+            modal.hide();
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Activer les tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+</body>
+</html>

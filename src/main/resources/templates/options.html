@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Options supplémentaires - ITU Airlines</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        .option-card {
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            height: 100%;
+        }
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .option-card.selected {
+            border-color: #0d6efd;
+            background-color: #e7f1ff;
+        }
+        .option-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #dee2e6;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+        .resume-option {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .option-category {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .progress-etapes {
+            height: 4px;
+            background: #dee2e6;
+            margin: 30px 0;
+            position: relative;
+        }
+        .etape-point {
+            position: absolute;
+            top: -8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #dee2e6;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+        }
+        .etape-point.active {
+            background: #0d6efd;
+        }
+        .etape-label {
+            position: absolute;
+            top: 25px;
+            font-size: 0.8em;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">ITU Airlines</a>
+            <div class="navbar-text text-white">
+                Étape 4/5 - Options supplémentaires
+            </div>
+        </div>
+    </nav>
+
+    <!-- Barre de progression -->
+    <div class="container">
+        <div class="progress-etapes">
+            <div class="etape-point" style="left: 0%;">✓</div>
+            <div class="etape-point active" style="left: 25%;">✓</div>
+            <div class="etape-point active" style="left: 50%;">✓</div>
+            <div class="etape-point active" style="left: 75%;">4</div>
+            <div class="etape-point" style="left: 100%;">5</div>
+            
+            <div class="etape-label" style="left: 0%;">Recherche</div>
+            <div class="etape-label" style="left: 25%;">Informations</div>
+            <div class="etape-label" style="left: 50%;">Siège</div>
+            <div class="etape-label" style="left: 75%;">Options</div>
+            <div class="etape-label" style="left: 95%;">Paiement</div>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <div class="row">
+            <!-- Options -->
+            <div class="col-lg-8">
+                <div class="text-center mb-5">
+                    <h2>Personnalisez votre voyage</h2>
+                    <p class="text-muted">Ajoutez des options pour rendre votre voyage plus confortable</p>
+                </div>
+
+                <!-- Bagages -->
+                <div class="option-category">
+                    <h4><i class="bi bi-suitcase"></i> Bagages</h4>
+                    <p class="text-muted">Gérez vos bagages en soute et cabine</p>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card option-card" onclick="selectOption(this, 'bagage-soute')">
+                                <div class="card-body text-center">
+                                    <div class="option-icon text-primary">
+                                        <i class="bi bi-suitcase"></i>
+                                    </div>
+                                    <h5>Bagage supplémentaire</h5>
+                                    <p class="text-muted">+23kg en soute</p>
+                                    <h4 class="text-primary">€30.00</h4>
+                                    <div class="quantity-control" style="display: none;">
+                                        <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                        <input type="number" class="quantity-input" value="0" min="0" max="3" readonly>
+                                        <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card option-card" onclick="selectOption(this, 'bagage-surpoids')">
+                                <div class="card-body text-center">
+                                    <div class="option-icon text-warning">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                    </div>
+                                    <h5>Surpoids bagage</h5>
+                                    <p class="text-muted">+5kg supplémentaire</p>
+                                    <h4 class="text-primary">€15.00</h4>
+                                    <div class="quantity-control" style="display: none;">
+                                        <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                        <input type="number" class="quantity-input" value="0" min="0" max="2" readonly>
+                                        <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card option-card" onclick="selectOption(this, 'bagage-fragile')">
+                                <div class="card-body text-center">
+                                    <div class="option-icon text-info">
+                                        <i class="bi bi-shield-check"></i>
+                                    </div>
+                                    <h5>Bagage fragile</h5>
+                                    <p class="text-muted">Manipulation spéciale</p>
+                                    <h4 class="text-primary">€10.00</h4>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox">
+                                        <label class="form-check-label">Ajouter</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Repas -->
+                <div class="option-category">
+                    <h4><i class="bi bi-egg-fried"></i> Repas à bord</h4>
+                    <p class="text-muted">Commandez vos repas à l'avance</p>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card option-card" onclick="selectOption(this, 'repas-vegetarien')">
+                                <div class="card-body text-center">
+                                    <div class="option-icon text-success">
+                                        <i class="bi bi-egg"></i>
+                                    </div>
+                                    <h5>Végétarien</h5>
+                                    <p class="text-muted">Menu sans viande</p>
+                                    <h4 class="text-primary">€10.00</h4>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox">
+                                        <label class="form-check-label">Sélectionner</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card option-card" onclick="selectOption(this, 'repas-halal')">
+                                <div class="card-body text-center">
+                                    <div class="option-icon text-success">
+                                        <i class="bi bi-moon-stars"></i>
+                                    </div>
+                                    <h5>Halal</h5>
+                                    <p class="text-muted">Préparation halal</p>
+                                    <h4 class="text-primary">€12.00</h4>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox">
+                                        <label class="form-check-label">Sélectionner</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card option-card" onclick="selectOption(this, 'repas-special')">
+                                <div class="card-body text-center">
+                                    <div class="option-icon text-success">
+                                        <i class="bi bi-heart"></i>
+                                    </div>
+                                    <h5>Régime spécial</h5>
+                                    <p class="text-muted">Allergies/intolérances</p>
+                                    <h4 class="text-primary">€15.00</h4>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox">
+                                        <label class="form-check-label">Sélectionner</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services -->
+                <div class="option-category">
+                    <h4><i class="bi bi-star"></i> Services premium</h4>
+                    <p class="text-muted">Améliorez votre expérience de voyage</p>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card option-card" onclick="selectOption(this, 'assurance')">
+                                <div class="card-body text-center">
+                                    <div class="option-icon text-danger">
+                                        <i class="bi bi-shield"></i>
+                                    </div>
+                                    <h5>Assurance voyage</h5>
+                                    <p class="text-muted">Annulation, bagages, santé</p>
+                                    <h4 class="text-primary">€20.00</h4>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox">
+                                        <label class="form-check-label">Souscrire</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card option-card" onclick="selectOption(this, 'priorite')">
+                                <div class="card-body text-center">
+                                    <div class="option-icon text-warning">
+                                        <i class="bi bi-lightning"></i>
+                                    </div>
+                                    <h5>Embarquement prioritaire</h5>
+                                    <p class="text-muted">Accès prioritaire</p>
+                                    <h4 class="text-primary">€15.00</h4>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox">
+                                        <label class="form-check-label">Sélectionner</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card option-card" onclick="selectOption(this, 'lounge')">
+                                <div class="card-body text-center">
+                                    <div class="option-icon text-info">
+                                        <i class="bi bi-cup-straw"></i>
+                                    </div>
+                                    <h5>Accès lounge</h5>
+                                    <p class="text-muted">Salon d'aéroport</p>
+                                    <h4 class="text-primary">€35.00</h4>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox">
+                                        <label class="form-check-label">Sélectionner</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transport -->
+                <div class="option-category">
+                    <h4><i class="bi bi-car-front"></i> Transport</h4>
+                    <p class="text-muted">Organisez vos transferts</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card option-card" onclick="selectOption(this, 'transfert-aeroport')">
+                                <div class="card-body text-center">
+                                    <div class="option-icon text-dark">
+                                        <i class="bi bi-taxi-front"></i>
+                                    </div>
+                                    <h5>Transfert aéroport</h5>
+                                    <p class="text-muted">Navette vers centre-ville</p>
+                                    <h4 class="text-primary">€25.00</h4>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox">
+                                        <label class="form-check-label">Réserver</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="card option-card" onclick="selectOption(this, 'location-voiture')">
+                                <div class="card-body text-center">
+                                    <div class="option-icon text-dark">
+                                        <i class="bi bi-car-front-fill"></i>
+                                    </div>
+                                    <h5>Location de voiture</h5>
+                                    <p class="text-muted">À partir de €30/jour</p>
+                                    <h4 class="text-primary">€30.00</h4>
+                                    <button class="btn btn-outline-primary btn-sm mt-2">
+                                        <i class="bi bi-search"></i> Voir disponibilités
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Récapitulatif -->
+            <div class="col-lg-4">
+                <div class="card shadow-lg sticky-top" style="top: 20px;">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-receipt"></i> Récapitulatif</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Détails du vol -->
+                        <div class="mb-4">
+                            <h6>Détails du vol</h6>
+                            <p class="mb-1">
+                                <strong>Vol MK101</strong><br>
+                                TNR → CDG • 15/01/2026<br>
+                                08:00 - 16:00 (8h00)
+                            </p>
+                            <p class="mb-0">
+                                <small>Siège: <span id="siegeRecap">-</span></small>
+                            </p>
+                        </div>
+                        
+                        <!-- Options sélectionnées -->
+                        <div class="mb-4">
+                            <h6>Options sélectionnées</h6>
+                            <div id="optionsListe">
+                                <div class="resume-option">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Bagage supplémentaire</span>
+                                        <span>€30.00</span>
+                                    </div>
+                                    <small class="text-muted">Quantité: 1</small>
+                                </div>
+                                <div class="resume-option">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Repas végétarien</span>
+                                        <span>€10.00</span>
+                                    </div>
+                                    <small class="text-muted">Aller uniquement</small>
+                                </div>
+                            </div>
+                            <div id="aucuneOption" class="text-center py-3">
+                                <i class="bi bi-inbox text-muted" style="font-size: 2em;"></i>
+                                <p class="text-muted mt-2">Aucune option sélectionnée</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Total -->
+                        <div class="border-top pt-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Prix du vol:</span>
+                                <span>€450.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Siège:</span>
+                                <span id="supplementSiegeRecap">€0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Options:</span>
+                                <span id="totalOptions">€40.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Frais de service:</span>
+                                <span>€10.00</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Total:</span>
+                                <span id="totalGeneral">€500.00</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation -->
+                        <div class="d-grid gap-2 mt-4">
+                            <a th:href="@{/reservation/} + ${volId} + '/paiement'" 
+                               class="btn btn-success btn-lg">
+                                <i class="bi bi-lock"></i> Continuer vers le paiement
+                            </a>
+                            <a th:href="@{/reservation/} + ${volId} + '/siege'" 
+                               class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-left"></i> Retour au choix du siège
+                            </a>
+                            <button class="btn btn-outline-secondary" onclick="toutDeselectionner()">
+                                <i class="bi bi-x-circle"></i> Tout désélectionner
+                            </button>
+                        </div>
+                        
+                        <!-- Information -->
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i> Les options peuvent être modifiées 
+                                jusqu'à 24h avant le départ.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal confirmation -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Voulez-vous ajouter cette option à votre réservation ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmerOption()">Confirmer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variables
+        let optionsSelectionnees = {
+            'bagage-soute': { prix: 30, quantite: 1 },
+            'repas-vegetarien': { prix: 10, quantite: 1 }
+        };
+        let optionEnCours = null;
+        
+        // Initialiser l'affichage
+        document.addEventListener('DOMContentLoaded', function() {
+            // Récupérer le siège sélectionné
+            const siege = localStorage.getItem('siegeSelectionne');
+            const supplement = localStorage.getItem('supplementSiege') || '€0.00';
+            
+            if (siege) {
+                document.getElementById('siegeRecap').textContent = siege;
+                document.getElementById('supplementSiegeRecap').textContent = supplement;
+            }
+            
+            // Mettre à jour le récapitulatif
+            mettreAJourRecap();
+            
+            // Marquer les options déjà sélectionnées
+            Object.keys(optionsSelectionnees).forEach(id => {
+                const optionCard = document.querySelector(`[onclick*="${id}"]`);
+                if (optionCard) {
+                    optionCard.classList.add('selected');
+                    // Afficher le contrôle de quantité pour les bagages
+                    if (id === 'bagage-soute' || id === 'bagage-surpoids') {
+                        const quantityControl = optionCard.querySelector('.quantity-control');
+                        if (quantityControl) {
+                            quantityControl.style.display = 'flex';
+                            const input = quantityControl.querySelector('.quantity-input');
+                            input.value = optionsSelectionnees[id].quantite;
+                        }
+                    }
+                }
+            });
+        });
+        
+        // Sélectionner une option
+        function selectOption(element, optionId) {
+            const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            optionEnCours = { element, optionId };
+            modal.show();
+        }
+        
+        // Confirmer l'option
+        function confirmerOption() {
+            if (!optionEnCours) return;
+            
+            const { element, optionId } = optionEnCours;
+            const modal = bootstrap.Modal.getInstance(document.getElementById('confirmationModal'));
+            
+            // Basculer la sélection
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                delete optionsSelectionnees[optionId];
+                
+                // Masquer le contrôle de quantité
+                const quantityControl = element.querySelector('.quantity-control');
+                if (quantityControl) {
+                    quantityControl.style.display = 'none';
+                }
+            } else {
+                element.classList.add('selected');
+                optionsSelectionnees[optionId] = { prix: 30, quantite: 1 }; // Prix par défaut
+                
+                // Afficher le contrôle de quantité pour les bagages
+                if (optionId === 'bagage-soute' || optionId === 'bagage-surpoids') {
+                    const quantityControl = element.querySelector('.quantity-control');
+                    if (quantityControl) {
+                        quantityControl.style.display = 'flex';
+                    }
+                }
+            }
+            
+            // Mettre à jour le récapitulatif
+            mettreAJourRecap();
+            
+            modal.hide();
+        }
+        
+        // Changer la quantité
+        function changeQuantity(btn, delta) {
+            const input = btn.parentNode.querySelector('.quantity-input');
+            let value = parseInt(input.value) + delta;
+            const max = parseInt(input.max);
+            const min = parseInt(input.min);
+            
+            if (value > max) value = max;
+            if (value < min) value = min;
+            
+            input.value = value;
+            
+            // Trouver l'ID de l'option
+            const card = btn.closest('.option-card');
+            const onclickAttr = card.getAttribute('onclick');
+            const optionId = onclickAttr.match(/selectOption\(this, '([^']+)'/)[1];
+            
+            // Mettre à jour la quantité dans optionsSelectionnees
+            if (optionsSelectionnees[optionId]) {
+                optionsSelectionnees[optionId].quantite = value;
+                if (value === 0) {
+                    delete optionsSelectionnees[optionId];
+                    card.classList.remove('selected');
+                }
+            }
+            
+            mettreAJourRecap();
+        }
+        
+        // Mettre à jour le récapitulatif
+        function mettreAJourRecap() {
+            const optionsListe = document.getElementById('optionsListe');
+            const aucuneOption = document.getElementById('aucuneOption');
+            const totalOptions = document.getElementById('totalOptions');
+            const totalGeneral = document.getElementById('totalGeneral');
+            
+            let html = '';
+            let totalOptionsPrix = 0;
+            let count = 0;
+            
+            // Générer la liste des options
+            for (const [id, option] of Object.entries(optionsSelectionnees)) {
+                const nom = getNomOption(id);
+                const total = option.prix * option.quantite;
+                totalOptionsPrix += total;
+                count++;
+                
+                html += `<div class="resume-option">
+                    <div class="d-flex justify-content-between">
+                        <span>${nom}</span>
+                        <span>€${total.toFixed(2)}</span>
+                    </div>
+                    ${option.quantite > 1 ? `<small class="text-muted">Quantité: ${option.quantite}</small>` : ''}
+                </div>`;
+            }
+            
+            // Afficher/masquer
+            if (count > 0) {
+                optionsListe.innerHTML = html;
+                optionsListe.style.display = 'block';
+                aucuneOption.style.display = 'none';
+            } else {
+                optionsListe.style.display = 'none';
+                aucuneOption.style.display = 'block';
+            }
+            
+            // Calculer les totaux
+            const prixVol = 450.00;
+            const supplementSiege = parseFloat(localStorage.getItem('supplementSiege')?.replace('€', '') || 0);
+            const fraisService = 10.00;
+            const total = prixVol + supplementSiege + totalOptionsPrix + fraisService;
+            
+            totalOptions.textContent = '€' + totalOptionsPrix.toFixed(2);
+            totalGeneral.textContent = '€' + total.toFixed(2);
+            
+            // Sauvegarder dans localStorage
+            localStorage.setItem('totalOptions', totalOptionsPrix.toFixed(2));
+            localStorage.setItem('totalGeneral', total.toFixed(2));
+        }
+        
+        // Obtenir le nom de l'option
+        function getNomOption(id) {
+            const noms = {
+                'bagage-soute': 'Bagage supplémentaire',
+                'bagage-surpoids': 'Surpoids bagage',
+                'bagage-fragile': 'Bagage fragile',
+                'repas-vegetarien': 'Repas végétarien',
+                'repas-halal': 'Repas halal',
+                'repas-special': 'Régime spécial',
+                'assurance': 'Assurance voyage',
+                'priorite': 'Embarquement prioritaire',
+                'lounge': 'Accès lounge',
+                'transfert-aeroport': 'Transfert aéroport',
+                'location-voiture': 'Location de voiture'
+            };
+            return noms[id] || 'Option';
+        }
+        
+        // Tout désélectionner
+        function toutDeselectionner() {
+            document.querySelectorAll('.option-card.selected').forEach(card => {
+                card.classList.remove('selected');
+                const quantityControl = card.querySelector('.quantity-control');
+                if (quantityControl) {
+                    quantityControl.style.display = 'none';
+                }
+            });
+            
+            optionsSelectionnees = {};
+            mettreAJourRecap();
+        }
+    </script>
+</body>
+</html>

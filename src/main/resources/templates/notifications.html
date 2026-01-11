@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Notifications</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+    <h1>Notifications</h1>
+
+    <ul>
+        <li th:each="n : ${notifications}">
+            <strong th:text="${n.type}">Type</strong> - <span th:text="${n.message}">Message</span>
+            <em> (<span th:text="${n.date}">date</span>)</em>
+        </li>
+    </ul>
+
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - ITU Airlines</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        .auth-container {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+        .auth-tab:hover {
+            background: #e9ecef;
+        }
+        .auth-tab.active {
+            background: white;
+            border-bottom: 3px solid #0d6efd;
+            font-weight: bold;
+        }
+        .auth-form {
+            padding: 30px;
+        }
+        .social-login {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .social-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .social-btn:hover {
+            background: #f8f9fa;
+        }
+        .google { color: #DB4437; }
+        .facebook { color: #4267B2; }
+        .linkedin { color: #0077B5; }
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+        .form-group {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">ITU Airlines</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="/">Accueil</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container auth-container">
+        <div class="auth-card">
+            <!-- Onglets -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="showTab('connexion')">
+                    Connexion
+                </button>
+                <button class="auth-tab" onclick="showTab('inscription')">
+                    Inscription
+                </button>
+                <button class="auth-tab" onclick="showTab('motdepasse')">
+                    Mot de passe oublié
+                </button>
+            </div>
+
+            <!-- Formulaire Connexion -->
+            <div id="tab-connexion" class="auth-form">
+                <h3 class="text-center mb-4">Connectez-vous à votre compte</h3>
+                
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" placeholder="votre@email.com" required>
+                    </div>
+                    
+                    <div class="mb-3 form-group">
+                        <label class="form-label">Mot de passe</label>
+                        <input type="password" class="form-control" id="loginPassword" placeholder="Votre mot de passe" required>
+                        <span class="password-toggle" onclick="togglePassword('loginPassword', this)">
+                            <i class="bi bi-eye"></i>
+                        </span>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">Se souvenir de moi</label>
+                        <a href="#" class="float-end" onclick="showTab('motdepasse')">Mot de passe oublié ?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 mb-3">
+                        <i class="bi bi-box-arrow-in-right"></i> Se connecter
+                    </button>
+                    
+                    <div class="text-center mb-3">
+                        <small class="text-muted">Ou connectez-vous avec</small>
+                    </div>
+                    
+                    <div class="social-login">
+                        <button type="button" class="social-btn google">
+                            <i class="bi bi-google"></i> Google
+                        </button>
+                        <button type="button" class="social-btn facebook">
+                            <i class="bi bi-facebook"></i> Facebook
+                        </button>
+                        <button type="button" class="social-btn linkedin">
+                            <i class="bi bi-linkedin"></i> LinkedIn
+                        </button>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <small class="text-muted">
+                            Pas encore de compte ? 
+                            <a href="#" onclick="showTab('inscription')" class="text-primary">Inscrivez-vous</a>
+                        </small>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Formulaire Inscription -->
+            <div id="tab-inscription" class="auth-form" style="display: none;">
+                <h3 class="text-center mb-4">Créez votre compte</h3>
+                
+                <form id="registerForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nom</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Prénom</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" required>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3 form-group">
+                            <label class="form-label">Mot de passe</label>
+                            <input type="password" class="form-control" id="registerPassword" required>
+                            <span class="password-toggle" onclick="togglePassword('registerPassword', this)">
+                                <i class="bi bi-eye"></i>
+                            </span>
+                        </div>
+                        <div class="col-md-6 mb-3 form-group">
+                            <label class="form-label">Confirmer le mot de passe</label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                            <span class="password-toggle" onclick="togglePassword('confirmPassword', this)">
+                                <i class="bi bi-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Téléphone</label>
+                        <input type="tel" class="form-control" placeholder="+261 34 12 345 67">
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="terms" required>
+                        <label class="form-check-label" for="terms">
+                            J'accepte les 
+                            <a href="#" class="text-primary">conditions générales</a> 
+                            et la 
+                            <a href="#" class="text-primary">politique de confidentialité</a>
+                        </label>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="newsletter" checked>
+                        <label class="form-check-label" for="newsletter">
+                            Je souhaite recevoir la newsletter et les offres promotionnelles
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 mb-3">
+                        <i class="bi bi-person-plus"></i> Créer mon compte
+                    </button>
+                    
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            Déjà un compte ? 
+                            <a href="#" onclick="showTab('connexion')" class="text-primary">Connectez-vous</a>
+                        </small>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Formulaire Mot de passe oublié -->
+            <div id="tab-motdepasse" class="auth-form" style="display: none;">
+                <h3 class="text-center mb-4">Réinitialiser votre mot de passe</h3>
+                <p class="text-muted text-center mb-4">
+                    Entrez votre email pour recevoir les instructions de réinitialisation
+                </p>
+                
+                <form id="passwordResetForm">
+                    <div class="mb-4">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" placeholder="votre@email.com" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 mb-3">
+                        <i class="bi bi-envelope"></i> Envoyer les instructions
+                    </button>
+                    
+                    <div class="text-center">
+                        <small class="text-muted">
+                            <a href="#" onclick="showTab('connexion')" class="text-primary">
+                                <i class="bi bi-arrow-left"></i> Retour à la connexion
+                            </a>
+                        </small>
+                    </div>
+                </form>
+                
+                <div class="alert alert-info mt-4">
+                    <h6><i class="bi bi-info-circle"></i> Important</h6>
+                    <small>
+                        Le lien de réinitialisation sera valide pendant 24 heures.
+                        Si vous ne recevez pas l'email, vérifiez votre dossier spam.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal succès inscription -->
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Succès !</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <i class="bi bi-check-circle text-success display-1"></i>
+                    <h4 class="mt-3" id="modalMessage"></h4>
+                    <p id="modalDetails"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continuer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Basculer entre les onglets
+        function showTab(tabName) {
+            // Masquer tous les onglets
+            document.querySelectorAll('.auth-form').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // Afficher l'onglet sélectionné
+            document.getElementById('tab-' + tabName).style.display = 'block';
+            
+            // Mettre à jour les boutons d'onglet
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Afficher/masquer le mot de passe
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = '<i class="bi bi-eye-slash"></i>';
+            } else {
+                input.type = 'password';
+                icon.innerHTML = '<i class="bi bi-eye"></i>';
+            }
+        }
+
+        // Validation du formulaire de connexion
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = this.querySelector('input[type="email"]').value;
+            const password = this.querySelector('input[type="password"]').value;
+            
+            // Simulation de connexion
+            setTimeout(() => {
+                document.getElementById('modalMessage').textContent = 'Connexion réussie !';
+                document.getElementById('modalDetails').textContent = 'Redirection vers votre compte...';
+                
+                const modal = new bootstrap.Modal(document.getElementById('successModal'));
+                modal.show();
+                
+                // Redirection après 2 secondes
+                setTimeout(() => {
+                    window.location.href = '/compte';
+                }, 2000);
+            }, 1000);
+        });
+
+        // Validation du formulaire d'inscription
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Les mots de passe ne correspondent pas');
+                return;
+            }
+            
+            if (!document.getElementById('terms').checked) {
+                alert('Vous devez accepter les conditions générales');
+                return;
+            }
+            
+            // Simulation d'inscription
+            setTimeout(() => {
+                document.getElementById('modalMessage').textContent = 'Compte créé avec succès !';
+                document.getElementById('modalDetails').textContent = 'Un email de confirmation vous a été envoyé.';
+                
+                const modal = new bootstrap.Modal(document.getElementById('successModal'));
+                modal.show();
+                
+                // Redirection après 2 secondes
+                setTimeout(() => {
+                    showTab('connexion');
+                    modal.hide();
+                }, 2000);
+            }, 1000);
+        });
+
+        // Validation du formulaire de mot de passe oublié
+        document.getElementById('passwordResetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simulation d'envoi d'email
+            setTimeout(() => {
+                document.getElementById('modalMessage').textContent = 'Email envoyé !';
+                document.getElementById('modalDetails').textContent = 'Vérifiez votre boîte mail pour les instructions de réinitialisation.';
+                
+                const modal = new bootstrap.Modal(document.getElementById('successModal'));
+                modal.show();
+                
+                // Redirection après 2 secondes
+                setTimeout(() => {
+                    showTab('connexion');
+                    modal.hide();
+                }, 2000);
+            }, 1000);
+        });
+
+        // Connexion sociale
+        document.querySelectorAll('.social-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const provider = this.textContent.trim();
+                alert('Connexion avec ' + provider + ' (simulation)');
+            });
+        });
+    </script>
+</body>
+</html>
