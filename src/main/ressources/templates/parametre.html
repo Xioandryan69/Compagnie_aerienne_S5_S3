@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Paramètres</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+    <h1>Paramètres</h1>
+
+    <h2>Classes</h2>
+    <ul>
+        <li th:each="c : ${classes}" th:text="${c}">Economy</li>
+    </ul>
+
+    <h2>Prix de base (exemples)</h2>
+    <ul>
+        <li th:each="entry : ${prix.entrySet()}" th:text="${entry.key + ' : ' + entry.value + ' EUR'}">Economy : 120.00 EUR</li>
+    </ul>
+
+    <h2>Politiques bagages</h2>
+    <ul>
+        <li th:each="entry : ${bagages.entrySet()}" th:text="${entry.key + ' : ' + entry.value}">Economy : 1 bagage ...</li>
+    </ul>
+
+</body>
+</html>

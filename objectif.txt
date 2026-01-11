@@ -133,15 +133,21 @@
     []factures 
 
 17-notifications.html
-    notifications 
-    []retard vol
-    []annulation
-    []changement de porte
+    Notifications
+    [X] retard vol — Exemples: 3 (05/01/2025: Vol AF123 retard 45min)
+    [X] annulation — Exemples: 1 (07/01/2025: Vol XY210 annulé)
+    [X] changement de porte — Exemples: 2 (Vol AF123: Porte A2 -> B4)
+    Messages statiques :
+        - "Vol AF123 retardé de 45 minutes."
+        - "Vol XY210 annulé pour raisons opérationnelles."
 
 18-parametre.html
-    parametre 
-    []classes du voyage 
-    []prix de voyage
-    []politiques bagages 
+    Paramètres
+    [X] classes du voyage : Economy, Business, First
+    [X] prix de voyage (exemples de base) : Economy=120.00 EUR, Business=380.00 EUR, First=950.00 EUR
+    [X] politiques bagages (exemples) :
+        - Economy: 1 bagage en soute 23kg + 1 bagage cabine 7kg
+        - Business: 2 bagages en soute 32kg + 1 bagage cabine 10kg
+        - First: 3 bagages en soute 32kg + 1 bagage cabine 14kg
 
 

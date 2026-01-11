@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Gestion des paiements</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+    <h1>Gestion des paiements</h1>
+    <p>Factures générées : <span th:text="${facturesCount}"></span></p>
+    <p>Paiements validés : <span th:text="${paiementsValides}"></span></p>
+    <p>Paiements annulés : <span th:text="${paiementsAnnules}"></span></p>
+
+    <h2>Liste des paiements (exemples)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Réservation</th>
+                <th>Montant</th>
+                <th>Statut</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="p : ${paiements}">
+                <td th:text="${p.id}">2025-001</td>
+                <td th:text="${p.reservation}">R2025-010</td>
+                <td th:text="${p.montant}">350.00 EUR</td>
+                <td th:text="${p.statut}">VALIDÉ</td>
+                <td th:text="${p.date}">2025-01-03</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
