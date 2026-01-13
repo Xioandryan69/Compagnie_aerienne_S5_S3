@@ -143,31 +143,26 @@
 
         <!-- Liste des avions -->
         <div class="row">
-            <!-- Avion 1 -->
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6" th:each="av : ${avions}">
                 <div class="avion-card">
-                    <span class="status-badge bg-success">DISPONIBLE</span>
+                    <span class="status-badge" th:classappend="${av.etat.equalsIgnoreCase('DISPONIBLE')}? ' bg-success' : (av.etat.equalsIgnoreCase('MAINTENANCE')? ' bg-warning text-dark' : ' bg-secondary')" th:text="${av.etat}">DISPONIBLE</span>
                     <div class="avion-image">
                         <i class="bi bi-airplane"></i>
                     </div>
-                    <h4>Airbus A320</h4>
-                    <p class="text-muted">Immatriculation: F-AB123</p>
+                    <h4 th:text="${av.modele}">Airbus A320</h4>
+                    <p class="text-muted" th:text="${'ID: ' + av.id}">Immatriculation: F-AB123</p>
                     
                     <ul class="specs-list">
-                        <li><strong>Capacité:</strong> 180 places</li>
-                        <li><strong>Année:</strong> 2018</li>
-                        <li><strong>Heures de vol:</strong> 12,500</li>
-                        <li><strong>Dernière maintenance:</strong> 15/12/2025</li>
-                        <li><strong>Prochaine maintenance:</strong> 15/03/2026</li>
+                        <li><strong>Capacité:</strong> <span th:text="${av.capacite}">180</span> places</li>
                     </ul>
                     
                     <div class="stats-grid">
                         <div class="stat-item">
-                            <div class="stat-value">42</div>
+                            <div class="stat-value">--</div>
                             <div class="stat-label">Vols/mois</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">98%</div>
+                            <div class="stat-value">--</div>
                             <div class="stat-label">Fiabilité</div>
                         </div>
                     </div>
@@ -178,93 +173,12 @@
                                 data-bs-target="#modifierAvionModal">
                             <i class="bi bi-pencil"></i> Modifier
                         </button>
-                        <button class="btn btn-outline-warning btn-sm flex-fill" onclick="changerEtat(1)">
+                        <button class="btn btn-outline-warning btn-sm flex-fill" th:onclick="|changerEtat(${av.id})|">
                             <i class="bi bi-gear"></i> État
                         </button>
                         <button class="btn btn-outline-info btn-sm flex-fill" 
                                 data-bs-toggle="modal" 
                                 data-bs-target="#affecterVolsModal">
-                            <i class="bi bi-calendar"></i> Affecter
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Avion 2 -->
-            <div class="col-lg-4 col-md-6">
-                <div class="avion-card">
-                    <span class="status-badge bg-success">DISPONIBLE</span>
-                    <div class="avion-image">
-                        <i class="bi bi-airplane"></i>
-                    </div>
-                    <h4>Boeing 737</h4>
-                    <p class="text-muted">Immatriculation: F-CD456</p>
-                    
-                    <ul class="specs-list">
-                        <li><strong>Capacité:</strong> 160 places</li>
-                        <li><strong>Année:</strong> 2019</li>
-                        <li><strong>Heures de vol:</strong> 10,200</li>
-                        <li><strong>Dernière maintenance:</strong> 10/01/2026</li>
-                        <li><strong>Prochaine maintenance:</strong> 10/04/2026</li>
-                    </ul>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-value">38</div>
-                            <div class="stat-label">Vols/mois</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value">96%</div>
-                            <div class="stat-label">Fiabilité</div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-3 d-flex gap-2">
-                        <button class="btn btn-outline-primary btn-sm flex-fill">
-                            <i class="bi bi-pencil"></i> Modifier
-                        </button>
-                        <button class="btn btn-outline-warning btn-sm flex-fill" onclick="changerEtat(2)">
-                            <i class="bi bi-gear"></i> État
-                        </button>
-                        <button class="btn btn-outline-info btn-sm flex-fill">
-                            <i class="bi bi-calendar"></i> Affecter
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Avion 3 -->
-            <div class="col-lg-4 col-md-6">
-                <div class="avion-card">
-                    <span class="status-badge bg-warning text-dark">MAINTENANCE</span>
-                    <div class="avion-image">
-                        <i class="bi bi-airplane"></i>
-                    </div>
-                    <h4>Embraer E195</h4>
-                    <p class="text-muted">Immatriculation: F-EF789</p>
-                    
-                    <ul class="specs-list">
-                        <li><strong>Capacité:</strong> 120 places</li>
-                        <li><strong>Année:</strong> 2020</li>
-                        <li><strong>Heures de vol:</strong> 8,700</li>
-                        <li><strong>Début maintenance:</strong> 05/01/2026</li>
-                        <li><strong>Fin prévue:</strong> 20/01/2026</li>
-                    </ul>
-                    
-                    <div class="maintenance-schedule">
-                        <h6><i class="bi bi-tools"></i> Maintenance en cours</h6>
-                        <p class="mb-1"><strong>Type:</strong> Révision générale</p>
-                        <p class="mb-0"><strong>Technicien:</strong> Jean Martin</p>
-                    </div>
-                    
-                    <div class="mt-3 d-flex gap-2">
-                        <button class="btn btn-outline-primary btn-sm flex-fill">
-                            <i class="bi bi-pencil"></i> Modifier
-                        </button>
-                        <button class="btn btn-outline-success btn-sm flex-fill" onclick="terminerMaintenance(3)">
-                            <i class="bi bi-check-circle"></i> Terminer
-                        </button>
-                        <button class="btn btn-outline-info btn-sm flex-fill">
                             <i class="bi bi-calendar"></i> Affecter
                         </button>
                     </div>
@@ -309,19 +223,19 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formAjouterAvion">
+                    <form id="formAjouterAvion" th:action="@{/admin/avions/ajouter}" th:object="${avion}" method="post">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Modèle *</label>
-                                <input type="text" class="form-control" required>
+                                <input type="text" class="form-control" th:field="*{modele}" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Immatriculation *</label>
-                                <input type="text" class="form-control" required>
+                                <input type="text" class="form-control" th:name="immatriculation" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Capacité *</label>
-                                <input type="number" class="form-control" required>
+                                <input type="number" class="form-control" th:field="*{capacite}" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Année de fabrication</label>
@@ -329,7 +243,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">État *</label>
-                                <select class="form-select" required>
+                                <select class="form-select" th:field="*{etat}" required>
                                     <option value="DISPONIBLE">Disponible</option>
                                     <option value="MAINTENANCE">Maintenance</option>
                                     <option value="HORS_SERVICE">Hors service</option>
@@ -381,7 +295,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" onclick="ajouterAvion()">Ajouter l'avion</button>
+                    <button type="submit" class="btn btn-primary">Ajouter l'avion</button>
                 </div>
             </div>
         </div>

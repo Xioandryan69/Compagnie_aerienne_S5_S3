@@ -10,8 +10,10 @@
 
     <ul>
         <li th:each="n : ${notifications}">
-            <strong th:text="${n.type}">Type</strong> - <span th:text="${n.message}">Message</span>
-            <em> (<span th:text="${n.date}">date</span>)</em>
+            <strong>Réservation #<span th:text="${n.id}">1</span></strong>
+            - Vol: <span th:text="${n.vol != null ? n.vol.numeroVol : n.volId}">MK000</span>
+            - <em th:text="${n.statut}">STATUT</em>
+            (<span th:text="${#temporals.format(n.dateReservation, 'yyyy-MM-dd HH:mm')}">date</span>)
         </li>
     </ul>
 

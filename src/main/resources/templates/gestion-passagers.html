@@ -166,39 +166,39 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr onclick="voirDetailPassager(1)" style="cursor: pointer;">
+                    <tr th:each="p : ${passagers}" th:onclick="|voirDetailPassager(${p.id})|" style="cursor: pointer;">
                         <td>
                             <div class="d-flex align-items-center">
                                 <div class="passager-avatar">
                                     <i class="bi bi-person"></i>
                                 </div>
                                 <div>
-                                    <strong>Jean Dupont</strong><br>
-                                    <small class="text-muted">15/05/1990</small>
+                                    <strong th:text="${p.nom + ' ' + p.prenom}">Nom Prénom</strong><br>
+                                    <small class="text-muted" th:text="${#temporals.format(p.dateNaissance, 'dd/MM/yyyy')}">01/01/1990</small>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <div>jean.dupont@email.com</div>
-                            <small>+261 34 12 345 67</small>
+                            <div th:text="${p.email}">email@example.com</div>
+                            <small th:text="${p.telephone}">+261 ...</small>
                         </td>
                         <td>
-                            <div>Passeport</div>
-                            <small>12AB34567</small>
+                            <div>Document</div>
+                            <small th:text="${p.numeroDocument}">--</small>
                         </td>
                         <td>
-                            <span class="fidelite-badge bg-warning text-dark">Gold</span><br>
-                            <small>1,250 points</small>
+                            <span class="fidelite-badge bg-secondary">--</span><br>
+                            <small>-- points</small>
                         </td>
                         <td>
                             <div class="text-center">
-                                <div class="stat-value">12</div>
+                                <div class="stat-value">--</div>
                                 <small class="stat-label">vols</small>
                             </div>
                         </td>
                         <td>
-                            <div>15/12/2025</div>
-                            <small>TNR → CDG</small>
+                            <div>--</div>
+                            <small>-- → --</small>
                         </td>
                         <td>
                             <span class="badge-status bg-success">Actif</span>
@@ -206,113 +206,16 @@
                         <td>
                             <div class="d-flex gap-2">
                                 <button class="btn btn-sm btn-outline-primary" 
-                                        onclick="event.stopPropagation(); modifierPassager(1)">
+                                        th:onclick="|event.stopPropagation(); modifierPassager(${p.id})|">
                                     <i class="bi bi-pencil"></i>
                                 </button>
                                 <button class="btn btn-sm btn-outline-info" 
-                                        onclick="event.stopPropagation(); voirReservations(1)">
+                                        th:onclick="|event.stopPropagation(); voirReservations(${p.id})|">
                                     <i class="bi bi-ticket"></i>
                                 </button>
                                 <button class="btn btn-sm btn-outline-danger" 
-                                        onclick="event.stopPropagation(); bloquerPassager(1)">
+                                        th:onclick="|event.stopPropagation(); bloquerPassager(${p.id})|">
                                     <i class="bi bi-person-x"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr onclick="voirDetailPassager(2)" style="cursor: pointer;">
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="passager-avatar bg-success">
-                                    <i class="bi bi-person"></i>
-                                </div>
-                                <div>
-                                    <strong>Marie Lambert</strong><br>
-                                    <small class="text-muted">22/08/1985</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div>marie.lambert@email.com</div>
-                            <small>+261 33 98 765 43</small>
-                        </td>
-                        <td>
-                            <div>Carte d'identité</div>
-                            <small>30119852200885</small>
-                        </td>
-                        <td>
-                            <span class="fidelite-badge bg-secondary">Silver</span><br>
-                            <small>850 points</small>
-                        </td>
-                        <td>
-                            <div class="text-center">
-                                <div class="stat-value">8</div>
-                                <small class="stat-label">vols</small>
-                            </div>
-                        </td>
-                        <td>
-                            <div>10/11/2025</div>
-                            <small>CDG → TNR</small>
-                        </td>
-                        <td>
-                            <span class="badge-status bg-success">Actif</span>
-                        </td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-info">
-                                    <i class="bi bi-ticket"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr onclick="voirDetailPassager(3)" style="cursor: pointer;">
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="passager-avatar bg-danger">
-                                    <i class="bi bi-person"></i>
-                                </div>
-                                <div>
-                                    <strong>Paul Martin</strong><br>
-                                    <small class="text-muted">03/12/1978</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div>paul.martin@email.com</div>
-                            <small>+261 32 11 223 34</small>
-                        </td>
-                        <td>
-                            <div>Passeport</div>
-                            <small>78CD90123</small>
-                        </td>
-                        <td>
-                            <span class="fidelite-badge bg-warning text-dark">Gold</span><br>
-                            <small>1,100 points</small>
-                        </td>
-                        <td>
-                            <div class="text-center">
-                                <div class="stat-value">15</div>
-                                <small class="stat-label">vols</small>
-                            </div>
-                        </td>
-                        <td>
-                            <div>05/10/2025</div>
-                            <small>CDG → JFK</small>
-                        </td>
-                        <td>
-                            <span class="badge-status bg-warning">Inactif</span>
-                        </td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-success" 
-                                        onclick="event.stopPropagation(); reactiverPassager(3)">
-                                    <i class="bi bi-person-check"></i>
                                 </button>
                             </div>
                         </td>

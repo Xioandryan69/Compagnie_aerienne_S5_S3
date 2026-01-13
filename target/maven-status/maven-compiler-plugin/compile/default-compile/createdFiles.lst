@@ -1,5 +1,7 @@
+repository/AvionRepository.class
 dto/RechercheDTO.class
 entity/Passager.class
+repository/PassagerRepository.class
 entity/Aeroport.class
 service/VolService.class
 controller/ReservationController.class
@@ -14,5 +16,6 @@ com/aerienne/AerienneApplication.class
 entity/Avion.class
 repository/VolRepository.class
 entity/OptionSupplementaire.class
+repository/OptionSupplementaireRepository.class
 controller/HomeController.class
 repository/AeroportRepository.class

@@ -8,7 +8,10 @@
 /home/itu/Documents/S3/MmBaovola/Compagnie_aerienne_S5_S3/src/main/java/entity/Avion.java
 /home/itu/Documents/S3/MmBaovola/Compagnie_aerienne_S5_S3/src/main/java/controller/HomeController.java
 /home/itu/Documents/S3/MmBaovola/Compagnie_aerienne_S5_S3/src/main/java/entity/Passager.java
+/home/itu/Documents/S3/MmBaovola/Compagnie_aerienne_S5_S3/src/main/java/repository/PassagerRepository.java
 /home/itu/Documents/S3/MmBaovola/Compagnie_aerienne_S5_S3/src/main/java/controller/AdminController.java
+/home/itu/Documents/S3/MmBaovola/Compagnie_aerienne_S5_S3/src/main/java/repository/AvionRepository.java
+/home/itu/Documents/S3/MmBaovola/Compagnie_aerienne_S5_S3/src/main/java/repository/OptionSupplementaireRepository.java
 /home/itu/Documents/S3/MmBaovola/Compagnie_aerienne_S5_S3/src/main/java/entity/Aeroport.java
 /home/itu/Documents/S3/MmBaovola/Compagnie_aerienne_S5_S3/src/main/java/service/VolService.java
 /home/itu/Documents/S3/MmBaovola/Compagnie_aerienne_S5_S3/src/main/java/service/PaiementService.java

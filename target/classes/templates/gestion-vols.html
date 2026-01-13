@@ -134,71 +134,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><strong>MK101</strong></td>
-                        <td>15/01/2026</td>
-                        <td>TNR (08:00)</td>
-                        <td>CDG (16:00)</td>
-                        <td>8h00</td>
-                        <td>Airbus A320</td>
-                        <td><span class="status-badge bg-success">Programmé</span></td>
-                        <td>145/180</td>
+                    <tr th:each="v : ${vols}">
+                        <td><strong th:text="${v.numeroVol}">MK101</strong></td>
+                        <td th:text="${#temporals.format(v.dateVol, 'dd/MM/yyyy')}">15/01/2026</td>
+                        <td th:text="${v.depart != null ? v.depart.codeIata + ' (' + #temporals.format(v.heureDepart, 'HH:mm') + ')' : v.departIata}">TNR (08:00)</td>
+                        <td th:text="${v.arrivee != null ? v.arrivee.codeIata + ' (' + #temporals.format(v.heureArrivee, 'HH:mm') + ')' : v.arriveeIata}">CDG (16:00)</td>
+                        <td th:text="${#strings.concat((v.heureArrivee.hour - v.heureDepart.hour), 'h')}">8h00</td>
+                        <td th:text="${v.avion != null ? v.avion.modele : v.avionId}">Airbus A320</td>
+                        <td><span class="status-badge bg-success" th:text="${'Programmé'}">Programmé</span></td>
+                        <td>--/--</td>
                         <td class="action-buttons">
-                            <button class="btn btn-sm btn-outline-primary" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#modifierVolModal"
-                                    onclick="chargerVol(1)">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-info" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#programmerModal">
-                                <i class="bi bi-calendar-plus"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-warning" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#affecterAvionsModal">
-                                <i class="bi bi-airplane"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="supprimerVol(1)">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>MK102</strong></td>
-                        <td>16/01/2026</td>
-                        <td>TNR (10:00)</td>
-                        <td>CDG (18:00)</td>
-                        <td>8h00</td>
-                        <td>Boeing 737</td>
-                        <td><span class="status-badge bg-success">Programmé</span></td>
-                        <td>120/160</td>
-                        <td class="action-buttons">
-                            <button class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="supprimerVol(2)">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>MK201</strong></td>
-                        <td>15/01/2026</td>
-                        <td>CDG (12:00)</td>
-                        <td>JFK (16:00)</td>
-                        <td>4h00</td>
-                        <td>Airbus A320</td>
-                        <td><span class="status-badge bg-info">En vol</span></td>
-                        <td>160/180</td>
-                        <td class="action-buttons">
-                            <button class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="supprimerVol(3)">
-                                <i class="bi bi-trash"></i>
-                            </button>
+                            <a class="btn btn-sm btn-outline-primary" th:href="@{'/admin/vols/edit/' + ${v.id}}"><i class="bi bi-pencil"></i></a>
+                            <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#programmerModal"><i class="bi bi-calendar-plus"></i></button>
+                            <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#affecterAvionsModal"><i class="bi bi-airplane"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" th:onclick="|supprimerVol(${v.id})|"><i class="bi bi-trash"></i></button>
                         </td>
                     </tr>
                 </tbody>
@@ -230,63 +179,55 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formAjouterVol">
+                    <form id="formAjouterVol" th:action="@{/admin/vols/ajouter}" th:object="${vol}" method="post">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Numéro de vol *</label>
-                                <input type="text" class="form-control" required>
+                                <input type="text" class="form-control" th:field="*{numeroVol}" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Date du vol *</label>
-                                <input type="date" class="form-control" required>
+                                <input type="date" class="form-control" th:field="*{dateVol}" required>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Heure départ *</label>
-                                <input type="time" class="form-control" required>
+                                <input type="time" class="form-control" th:field="*{heureDepart}" required>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Heure arrivée *</label>
-                                <input type="time" class="form-control" required>
+                                <input type="time" class="form-control" th:field="*{heureArrivee}" required>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Prix *</label>
                                 <div class="input-group">
                                     <span class="input-group-text">€</span>
-                                    <input type="number" class="form-control" step="0.01" required>
+                                    <input type="number" class="form-control" th:field="*{prix}" step="0.01" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Aéroport de départ *</label>
-                                <select class="form-select" required>
+                                <select class="form-select" th:field="*{departIata}" required>
                                     <option value="">Sélectionner...</option>
-                                    <option value="TNR">TNR - Ivato (Antananarivo)</option>
-                                    <option value="CDG">CDG - Charles de Gaulle (Paris)</option>
-                                    <option value="JFK">JFK - John F. Kennedy (New York)</option>
-                                    <option value="LHR">LHR - Heathrow (Londres)</option>
+                                    <option th:each="a : ${aeroports}" th:value="${a.codeIata}" th:text="${a.codeIata + ' - ' + a.nom}"></option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Aéroport d'arrivée *</label>
-                                <select class="form-select" required>
+                                <select class="form-select" th:field="*{arriveeIata}" required>
                                     <option value="">Sélectionner...</option>
-                                    <option value="TNR">TNR - Ivato (Antananarivo)</option>
-                                    <option value="CDG">CDG - Charles de Gaulle (Paris)</option>
-                                    <option value="JFK">JFK - John F. Kennedy (New York)</option>
-                                    <option value="LHR">LHR - Heathrow (Londres)</option>
+                                    <option th:each="a : ${aeroports}" th:value="${a.codeIata}" th:text="${a.codeIata + ' - ' + a.nom}"></option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Avion *</label>
-                                <select class="form-select" required>
+                                <select class="form-select" th:field="*{avionId}" required>
                                     <option value="">Sélectionner...</option>
-                                    <option value="1">Airbus A320 (180 places)</option>
-                                    <option value="2">Boeing 737 (160 places)</option>
-                                    <option value="3">Embraer E195 (120 places)</option>
+                                    <option th:each="av : ${avions}" th:value="${av.id}" th:text="${av.modele + ' (' + av.capacite + ' places)'}"></option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Classe</label>
-                                <select class="form-select">
+                                <select class="form-select" name="classe">
                                     <option value="ECO">Économique</option>
                                     <option value="BUSINESS">Affaires</option>
                                     <option value="PREMIERE">Première</option>
@@ -305,7 +246,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" onclick="ajouterVol()">Ajouter le vol</button>
+                    <button type="submit" class="btn btn-primary">Ajouter le vol</button>
                 </div>
             </div>
         </div>

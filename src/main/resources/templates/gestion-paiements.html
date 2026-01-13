@@ -11,8 +11,8 @@
     <p>Paiements validés : <span th:text="${paiementsValides}"></span></p>
     <p>Paiements annulés : <span th:text="${paiementsAnnules}"></span></p>
 
-    <h2>Liste des paiements (exemples)</h2>
-    <table>
+    <h2>Liste des paiements (basée sur les réservations)</h2>
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>Id</th>
@@ -24,11 +24,11 @@
         </thead>
         <tbody>
             <tr th:each="p : ${paiements}">
-                <td th:text="${p.id}">2025-001</td>
-                <td th:text="${p.reservation}">R2025-010</td>
-                <td th:text="${p.montant}">350.00 EUR</td>
-                <td th:text="${p.statut}">VALIDÉ</td>
-                <td th:text="${p.date}">2025-01-03</td>
+                <td th:text="${p.id}">1</td>
+                <td th:text="${'R' + p.id}">R1</td>
+                <td th:text="${p.vol != null ? p.vol.prix : p.volId}">0.00</td>
+                <td th:text="${p.statut}">STATUT</td>
+                <td th:text="${#temporals.format(p.dateReservation, 'yyyy-MM-dd HH:mm')}">2025-01-03</td>
             </tr>
         </tbody>
     </table>
