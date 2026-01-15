@@ -94,6 +94,12 @@ public class AdminController {
         return "gestion-passagers";
     }
 
+    @GetMapping("/admin/utilisateurs")
+    public String gestionUtilisateurs(Model model) {
+        // Page "utilisateurs" not implemented separately - reuse passagers management for now
+        return "redirect:/admin/passagers";
+    }
+
     @GetMapping("/admin/paiements")
     public String gestionPaiements(Model model) {
         var reservations = reservationRepository.findAll();

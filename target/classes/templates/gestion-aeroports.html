@@ -192,10 +192,10 @@
                                 data-bs-target="#modifierAeroportModal">
                             <i class="bi bi-pencil"></i> Modifier
                         </button>
-                        <button class="btn btn-outline-info btn-sm flex-fill" th:onclick="|voirStatistiques('${a.codeIata}')|">
+                        <button class="btn btn-outline-info btn-sm flex-fill" th:attr="onclick=|voirStatistiques('${a.codeIata}')|">
                             <i class="bi bi-graph-up"></i> Stats
                         </button>
-                        <button class="btn btn-outline-danger btn-sm flex-fill" th:onclick="|supprimerAeroport('${a.codeIata}')|">
+                        <button class="btn btn-outline-danger btn-sm flex-fill" th:attr="onclick=|supprimerAeroport('${a.codeIata}')|">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>

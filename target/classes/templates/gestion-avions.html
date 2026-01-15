@@ -143,9 +143,9 @@
 
         <!-- Liste des avions -->
         <div class="row">
-            <div class="col-lg-4 col-md-6" th:each="av : ${avions}">
+                <div class="col-lg-4 col-md-6" th:each="av : ${avions}">
                 <div class="avion-card">
-                    <span class="status-badge" th:classappend="${av.etat.equalsIgnoreCase('DISPONIBLE')}? ' bg-success' : (av.etat.equalsIgnoreCase('MAINTENANCE')? ' bg-warning text-dark' : ' bg-secondary')" th:text="${av.etat}">DISPONIBLE</span>
+                    <span class="status-badge" th:classappend="${av.etat != null and av.etat.equalsIgnoreCase('DISPONIBLE') ? ' bg-success' : (av.etat != null and av.etat.equalsIgnoreCase('MAINTENANCE') ? ' bg-warning text-dark' : ' bg-secondary')}" th:text="${av.etat}">DISPONIBLE</span>
                     <div class="avion-image">
                         <i class="bi bi-airplane"></i>
                     </div>
@@ -295,7 +295,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Ajouter l'avion</button>
+                    <button type="submit" form="formAjouterAvion" class="btn btn-primary">Ajouter l'avion</button>
                 </div>
             </div>
         </div>

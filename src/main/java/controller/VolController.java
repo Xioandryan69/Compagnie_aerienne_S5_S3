@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import dto.RechercheDTO;
 import repository.OptionSupplementaireRepository;
 import service.VolService;
 
@@ -22,6 +23,9 @@ public class VolController {
     @GetMapping("/vols")
     public String listeVols(Model model) {
         model.addAttribute("vols", volService.findAll());
+        // Provide an empty search criteria so the template can safely reference fields like critere.depart
+        model.addAttribute("critere", new RechercheDTO());
+        model.addAttribute("nombreVols", volService.findAll().size());
         return "vols";
     }
 

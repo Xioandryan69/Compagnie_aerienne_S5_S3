@@ -38,6 +38,9 @@ public class Passager {
     @Column(name = "telephone")
     private String telephone;
 
+    @Column(name = "sexe")
+    private String sexe;
+
     public Passager() {
     }
 
@@ -114,5 +117,13 @@ public class Passager {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public String getSexe() {
+        return sexe;
+    }
+
+    public void setSexe(String sexe) {
+        this.sexe = sexe;
     }
 }
