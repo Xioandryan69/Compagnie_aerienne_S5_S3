@@ -151,3 +151,22 @@
         - First: 3 bagages en soute 32kg + 1 bagage cabine 14kg
 
 
+
+1- barre de Recherhe vol  [OK]
+2-Recherche [OK]
+3-detail vol [OK]
+4-reservation[OK]
+5-siege (reservation ) 
+6-reservation options [Ok]
+7-paiement[Ok]
+8-connexion[OK]
+9-compte[OK] 
+10-admin[Ok]
+11-admin/vols [Ok]
+12-admin/avionc[OK]
+14-admin/aeroport[OK]
+15-admin/passager[OK]
+16-admin/payement[Ok]
+17-admin/notification[Ok]
+18-admin/parametre[Ok]
+
