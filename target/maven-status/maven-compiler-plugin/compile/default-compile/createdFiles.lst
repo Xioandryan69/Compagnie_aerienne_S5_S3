@@ -11,6 +11,10 @@ entity/Reservation.class
 entity/Vol.class
 controller/VolController.class
 service/PaiementService.class
+service/AvionService.class
+service/OptionSupplementaireService.class
+service/AeroportService.class
+service/PassagerService.class
 service/ReservationService.class
 com/aerienne/AerienneApplication.class
 entity/Avion.class

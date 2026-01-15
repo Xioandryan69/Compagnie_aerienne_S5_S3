@@ -3,36 +3,32 @@ package controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
-import repository.VolRepository;
-import repository.PassagerRepository;
-import repository.ReservationRepository;
+import service.PassagerService;
 import service.ReservationService;
+import service.VolService;
 
 @Controller
 public class ReservationController {
 
-    private final VolRepository volRepository;
-    private final PassagerRepository passagerRepository;
-    private final ReservationRepository reservationRepository;
+    private final VolService volService;
+    private final PassagerService passagerService;
     private final ReservationService reservationService;
 
-    public ReservationController(VolRepository volRepository,
-            PassagerRepository passagerRepository,
-            ReservationRepository reservationRepository,
+    public ReservationController(VolService volService,
+            PassagerService passagerService,
             ReservationService reservationService) {
-        this.volRepository = volRepository;
-        this.passagerRepository = passagerRepository;
-        this.reservationRepository = reservationRepository;
+        this.volService = volService;
+        this.passagerService = passagerService;
         this.reservationService = reservationService;
     }
 
     @GetMapping("/reservation/{volId}")
     public String formulairePassager(@PathVariable Long volId, Model model) {
-        return volRepository.findById(volId)
+        return volService.findById(volId)
                 .map(vol -> {
                     model.addAttribute("vol", vol);
                     model.addAttribute("passager", new entity.Passager());
@@ -45,7 +41,7 @@ public class ReservationController {
     public String traiterPassager(@PathVariable Long volId,
             @ModelAttribute entity.Passager passager,
             Model model) {
-        entity.Passager saved = passagerRepository.save(passager);
+        entity.Passager saved = passagerService.save(passager);
         model.addAttribute("volId", volId);
         model.addAttribute("passager", saved);
         return "choix-siege";
@@ -69,7 +65,7 @@ public class ReservationController {
 
     @GetMapping("/reservation/{volId}/paiement")
     public String paiement(@PathVariable Long volId, Model model) {
-        return volRepository.findById(volId)
+        return volService.findById(volId)
                 .map(vol -> {
                     model.addAttribute("vol", vol);
                     model.addAttribute("total", vol.getPrix() + 30.00);
@@ -79,7 +75,7 @@ public class ReservationController {
 
     @GetMapping("/reservation/confirmation/{id}")
     public String confirmation(@PathVariable Long id, Model model) {
-        return reservationRepository.findById(id)
+        return reservationService.findById(id)
                 .map(res -> {
                     model.addAttribute("reservation", res);
                     return "confirmation";

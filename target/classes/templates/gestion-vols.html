@@ -261,51 +261,56 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formModifierVol">
+                    <form id="formModifierVol" th:action="@{/admin/vols/modifier}" th:object="${vol}" method="post">
+                        <input type="hidden" th:field="*{id}" />
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Numéro de vol</label>
-                                <input type="text" class="form-control" value="MK101">
+                                <input type="text" class="form-control" th:field="*{numeroVol}">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Date du vol</label>
-                                <input type="date" class="form-control" value="2026-01-15">
+                                <input type="date" class="form-control" th:field="*{dateVol}">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Heure départ</label>
-                                <input type="time" class="form-control" value="08:00">
+                                <input type="time" class="form-control" th:field="*{heureDepart}">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Heure arrivée</label>
-                                <input type="time" class="form-control" value="16:00">
+                                <input type="time" class="form-control" th:field="*{heureArrivee}">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Prix</label>
                                 <div class="input-group">
                                     <span class="input-group-text">€</span>
-                                    <input type="number" class="form-control" value="450.00">
+                                    <input type="number" class="form-control" th:field="*{prix}" step="0.01">
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Statut</label>
-                                <select class="form-select">
-                                    <option value="PROGRAMME" selected>Programmé</option>
-                                    <option value="EN_VOL">En vol</option>
-                                    <option value="ARRIVE">Arrivé</option>
-                                    <option value="RETARDE">Retardé</option>
-                                    <option value="ANNULE">Annulé</option>
+                                <label class="form-label">Aéroport de départ</label>
+                                <select class="form-select" th:field="*{departIata}">
+                                    <option value="">Sélectionner...</option>
+                                    <option th:each="a : ${aeroports}" th:value="${a.codeIata}" th:text="${a.codeIata + ' - ' + a.nom}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Aéroport d'arrivée</label>
+                                <select class="form-select" th:field="*{arriveeIata}">
+                                    <option value="">Sélectionner...</option>
+                                    <option th:each="a : ${aeroports}" th:value="${a.codeIata}" th:text="${a.codeIata + ' - ' + a.nom}"></option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Avion</label>
-                                <select class="form-select">
-                                    <option value="1" selected>Airbus A320 (180 places)</option>
-                                    <option value="2">Boeing 737 (160 places)</option>
+                                <select class="form-select" th:field="*{avionId}">
+                                    <option value="">Sélectionner...</option>
+                                    <option th:each="av : ${avions}" th:value="${av.id}" th:text="${av.modele + ' (' + av.capacite + ' places)'}"></option>
                                 </select>
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Remarques</label>
-                                <textarea class="form-control" rows="3" placeholder="Notes internes..."></textarea>
+                                <textarea class="form-control" rows="3" name="remarques" placeholder="Notes internes..."></textarea>
                             </div>
                         </div>
                     </form>
@@ -505,13 +510,26 @@
             }
         }
 
-        // Supprimer un vol
+        // Supprimer un vol (redirige vers l'endpoint serveur)
         function supprimerVol(id) {
             if (confirm('Êtes-vous sûr de vouloir supprimer ce vol ?')) {
-                alert('Vol ' + id + ' supprimé (simulation)');
-                // Ici, appel API pour supprimer
+                window.location.href = '/admin/vols/supprimer/' + id;
             }
         }
+
+        /* Auto-ouvrir la modal d'édition si le contrôleur a demandé */
+        (function() {
+            /*<![CDATA[*/
+            var openEdit = /*[[${openEditModal}]]*/ false;
+            /*]]>*/
+            if (openEdit) {
+                document.addEventListener('DOMContentLoaded', function() {
+                    var modalEl = document.getElementById('modifierVolModal');
+                    var modal = new bootstrap.Modal(modalEl);
+                    modal.show();
+                });
+            }
+        })();
 
         // Programmer un vol sur plusieurs jours
         function programmerVol() {

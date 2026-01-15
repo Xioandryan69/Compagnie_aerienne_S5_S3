@@ -7,17 +7,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import dto.RechercheDTO;
-import repository.AeroportRepository;
+import service.AeroportService;
 import service.VolService;
 
 @Controller
 public class HomeController {
 
-    private final AeroportRepository aeroportRepository;
+    private final AeroportService aeroportService;
     private final VolService volService;
 
-    public HomeController(AeroportRepository aeroportRepository, VolService volService) {
-        this.aeroportRepository = aeroportRepository;
+    public HomeController(AeroportService aeroportService, VolService volService) {
+        this.aeroportService = aeroportService;
         this.volService = volService;
     }
 
@@ -27,7 +27,7 @@ public class HomeController {
         model.addAttribute("message", "Voyagez loin, payez juste.");
         model.addAttribute("recherche", new RechercheDTO());
 
-        model.addAttribute("aeroports", aeroportRepository.findAll());
+        model.addAttribute("aeroports", aeroportService.findAll());
 
         return "index";
     }

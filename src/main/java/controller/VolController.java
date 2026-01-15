@@ -6,18 +6,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import dto.RechercheDTO;
-import repository.OptionSupplementaireRepository;
+import service.OptionSupplementaireService;
 import service.VolService;
 
 @Controller
 public class VolController {
 
     private final VolService volService;
-    private final OptionSupplementaireRepository optionRepository;
+    private final OptionSupplementaireService optionService;
 
-    public VolController(VolService volService, OptionSupplementaireRepository optionRepository) {
+    public VolController(VolService volService, OptionSupplementaireService optionService) {
         this.volService = volService;
-        this.optionRepository = optionRepository;
+        this.optionService = optionService;
     }
 
     @GetMapping("/vols")
@@ -34,7 +34,7 @@ public class VolController {
         return volService.findById(id)
                 .map(vol -> {
                     model.addAttribute("vol", vol);
-                    model.addAttribute("optionsSupplementaires", optionRepository.findAll());
+                    model.addAttribute("optionsSupplementaires", optionService.findAll());
                     return "details-vol";
                 })
                 .orElse("redirect:/vols");

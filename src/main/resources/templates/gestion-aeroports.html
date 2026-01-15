@@ -458,11 +458,10 @@
             // window.location.href = '/admin/aeroports/' + codeIata + '/statistiques';
         }
 
-        // Supprimer un aéroport
+        // Supprimer un aéroport (redirige vers l'endpoint serveur)
         function supprimerAeroport(codeIata) {
             if (confirm('Êtes-vous sûr de vouloir supprimer l\'aéroport ' + codeIata + ' ?')) {
-                alert('Aéroport ' + codeIata + ' supprimé (simulation)');
-                // Ici, appel API pour supprimer
+                window.location.href = '/admin/aeroports/supprimer/' + codeIata;
             }
         }
 

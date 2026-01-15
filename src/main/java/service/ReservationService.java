@@ -3,9 +3,9 @@ package service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import repository.OptionSupplementaireRepository;
 import repository.PassagerRepository;
 import repository.ReservationRepository;
-import repository.OptionSupplementaireRepository;
 
 @Service
 public class ReservationService {
@@ -36,5 +36,21 @@ public class ReservationService {
         }
 
         return savedRes;
+    }
+
+    public java.util.List<entity.Reservation> findAll() {
+        return reservationRepository.findAll();
+    }
+
+    public java.util.Optional<entity.Reservation> findById(Long id) {
+        return reservationRepository.findById(id);
+    }
+
+    public entity.Reservation save(entity.Reservation reservation) {
+        return reservationRepository.save(reservation);
+    }
+
+    public void deleteById(Long id) {
+        reservationRepository.deleteById(id);
     }
 }
